@@ -1,0 +1,293 @@
+Web Application Build Instructions (Replit Agent)
+
+(Authoritative — v0.0)
+
+1. Purpose of This Document
+
+This document defines:
+
+Exact instructions for building the web application inside Replit, including scope, responsibilities, constraints, and non-goals.
+
+Its purpose is to:
+
+Ensure the web app is built correctly the first time
+
+Prevent architectural violations
+
+Keep the web app strictly within its intended role
+
+Enable safe dev → prod promotion without rewrites
+
+This document is binding for both human developers and the Replit Agent.
+
+2. Web App Role (Non-Negotiable)
+
+The web application is:
+
+A read-only, user-facing interface for viewing backend state.
+
+It exists to:
+
+Authenticate users
+
+Display registered devices
+
+Display the latest known Wi-Fi IP address
+
+Display availability and timestamps
+
+It must never:
+
+Detect network changes
+
+Trigger IP fetching
+
+Mutate device state
+
+Communicate with the local agent
+
+Contain OS-level logic
+
+If the web app does any of the above, it is incorrect.
+
+3. Execution Environment
+Platform
+
+Replit (Cloud Runtime)
+
+Language & Framework
+
+React + TypeScript
+
+Build Tool
+
+Vite
+
+Runtime Mode
+
+Same codebase for dev and prod
+
+Environment variables determine behavior
+
+4. Repository Location
+
+The web app must live in:
+
+repo-root/
+└─ web/
+
+
+No backend or agent code is allowed in this directory.
+
+5. Responsibilities of the Replit Agent
+
+The Replit Agent is responsible for:
+
+Bootstrapping a React + TypeScript project
+
+Configuring build and dev scripts
+
+Implementing authentication UI
+
+Implementing read-only data views
+
+Connecting to backend APIs
+
+Ensuring clean builds in Replit
+
+Respecting all constraints listed below
+
+The Replit Agent is not allowed to redesign architecture.
+
+6. Required Pages & Views (v0.0)
+6.1 Authentication View
+
+Login form
+
+Logout capability
+
+Session persistence
+
+6.2 Device List View
+
+List of user-owned devices
+
+Each device shows:
+
+Device name
+
+Availability status
+
+Last updated timestamp
+
+6.3 Device Detail View
+
+Selected device details
+
+Displays:
+
+Current Wi-Fi IP address
+
+Label if “last known”
+
+Timestamp of last update
+
+No editing, no actions, no refresh buttons.
+
+7. Data Access Rules (Strict)
+Allowed
+
+GET /auth/session
+
+GET /devices
+
+GET /devices/:id
+
+GET /devices/:id/network-state
+
+Forbidden
+
+Any POST, PUT, DELETE from the web app
+
+Any endpoint that mutates state
+
+Any direct database access
+
+The web app is a consumer only.
+
+8. Authentication Expectations
+
+User authentication is required for all views
+
+Unauthenticated users must be redirected to login
+
+Session handling must be secure
+
+Tokens/secrets must never be hardcoded
+
+9. Configuration Model
+
+The web app must read configuration from environment variables only:
+
+Variable	Purpose
+VITE_API_BASE_URL	Backend API base
+VITE_ENV	dev or prod
+
+No config files with secrets are allowed.
+
+10. Dev vs Prod Behavior
+Dev Mode
+
+Verbose console logging allowed
+
+Uses dev backend endpoint
+
+Hot reload enabled
+
+Prod Mode
+
+Minimal logging
+
+Uses prod backend endpoint
+
+Optimized build
+
+Same code. Different config.
+
+11. UI/UX Constraints
+
+Clean, minimal UI
+
+No animations required
+
+No heavy design systems
+
+Clarity over beauty
+
+IP address must be highly visible
+
+The UI must reduce cognitive load, not add it.
+
+12. Error & Empty States (Required)
+
+The web app must explicitly handle:
+
+No devices registered
+
+Device unavailable
+
+Stale IP address
+
+Backend unreachable
+
+Auth expired
+
+No silent failures.
+
+13. Explicit Non-Goals (v0.0)
+
+The Replit Agent must NOT implement:
+
+Notifications
+
+Polling or auto-refresh
+
+WebSockets
+
+DNS resolution
+
+Device registration
+
+Admin dashboards
+
+Settings pages
+
+These are intentionally deferred.
+
+14. Build & Run Instructions (Replit)
+
+The Replit Agent must ensure:
+
+npm install
+npm run dev     # for development
+npm run build   # for production build
+npm run preview # optional
+
+
+The app must run cleanly in Replit with no manual steps.
+
+15. Acceptance Criteria (Definition of Done)
+
+The web app is considered complete if:
+
+A user can log in
+
+The user can see their devices
+
+The user can see the correct IP address
+
+Stale/unavailable states are clearly labeled
+
+No state mutation is possible from the UI
+
+Dev and prod builds both succeed
+
+16. Enforcement Statement
+
+If the Replit Agent deviates from these instructions, the output is considered invalid and must be corrected.
+
+17. Web App Anchor Statement
+
+The web app displays truth; it does not create or influence truth.
+
+Status
+
+This document:
+
+✅ Aligns with all prior architecture and security decisions
+
+✅ Is safe to give directly to the Replit Agent
+
+✅ Locks scope for v0.0
+
+✅ Enables clean dev → prod promotion
