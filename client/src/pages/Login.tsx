@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Mail, Lock, Shield } from "lucide-react";
-import { SiGoogle, SiGithub } from "react-icons/si";
+import { SiGoogle } from "react-icons/si";
 import logoUrl from "@/assets/logo.png";
 
 export default function LoginPage() {
@@ -48,17 +48,6 @@ export default function LoginPage() {
               >
                 <SiGoogle className="w-5 h-5 mr-3 text-[#4285F4]" />
                 Continue with Google
-              </Button>
-
-              <Button 
-                variant="outline"
-                size="lg" 
-                onClick={handleLogin}
-                className="w-full"
-                data-testid="button-login-github"
-              >
-                <SiGithub className="w-5 h-5 mr-3" />
-                Continue with GitHub
               </Button>
 
               {/* Divider */}
