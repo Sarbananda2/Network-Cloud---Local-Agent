@@ -65,7 +65,13 @@ The web app must never:
 - **ORM**: Drizzle with `drizzle-kit` for migrations (`npm run db:push`)
 
 ### Authentication
-- **Replit Auth**: OpenID Connect provider
+- **Replit Auth**: OpenID Connect provider (Google and Email/magic link only)
+- **HTML-based Redirects**: Auth flows use HTML pages with titles instead of HTTP 302 redirects to prevent URL flashes in browser tabs
+- **Auth Endpoints**:
+  - `/api/login-start` - HTML page that redirects to `/api/login` (shows "NetworkCloud" in tab)
+  - `/api/login` - Initiates OIDC authentication
+  - `/api/callback` - Processes auth response with HTML redirect to `/`
+  - `/api/logout` - Ends session with HTML redirect to OIDC end-session URL
 - **Required Environment Variables**:
   - `ISSUER_URL` (defaults to `https://replit.com/oidc`)
   - `REPL_ID` (automatically set by Replit)
