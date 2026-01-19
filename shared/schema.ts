@@ -7,13 +7,34 @@ import { users } from "./models/auth";
 // Export everything from auth model (users AND sessions tables)
 export * from "./models/auth";
 
+// === AGENT TOKENS ===
+
+export const agentTokens = pgTable("agent_tokens", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  name: text("name").notNull(),
+  tokenHash: varchar("token_hash", { length: 64 }).notNull().unique(),
+  tokenPrefix: varchar("token_prefix", { length: 8 }).notNull(),
+  lastUsedAt: timestamp("last_used_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  revokedAt: timestamp("revoked_at"),
+});
+
+export const agentTokensRelations = relations(agentTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [agentTokens.userId],
+    references: [users.id],
+  }),
+}));
+
 // === TABLE DEFINITIONS ===
 
 export const devices = pgTable("devices", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").notNull().references(() => users.id), // Link to auth users
+  userId: varchar("user_id").notNull().references(() => users.id),
   name: text("name").notNull(),
-  status: text("status").notNull().default("offline"), // online, offline, away
+  macAddress: varchar("mac_address", { length: 17 }),
+  status: text("status").notNull().default("offline"),
   lastSeenAt: timestamp("last_seen_at").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -79,4 +100,30 @@ export interface DeviceDetailResponse extends Device {
 export interface SessionResponse {
   user?: typeof users.$inferSelect;
   authenticated: boolean;
+}
+
+// === AGENT TOKEN TYPES ===
+
+export type AgentToken = typeof agentTokens.$inferSelect;
+
+export const insertAgentTokenSchema = createInsertSchema(agentTokens).omit({
+  id: true,
+  createdAt: true,
+  lastUsedAt: true,
+  revokedAt: true,
+});
+
+export type InsertAgentToken = z.infer<typeof insertAgentTokenSchema>;
+
+export interface AgentTokenResponse {
+  id: number;
+  name: string;
+  tokenPrefix: string;
+  lastUsedAt: Date | null;
+  createdAt: Date | null;
+  revokedAt: Date | null;
+}
+
+export interface AgentTokenCreateResponse extends AgentTokenResponse {
+  token: string;
 }
