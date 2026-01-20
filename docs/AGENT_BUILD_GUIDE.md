@@ -106,7 +106,471 @@ go mod init networkcloud-agent
 
 ---
 
-## Part 5: Cursor AI Prompt
+## Part 5: Cursor Rules & Standards
+
+**IMPORTANT**: Before starting any work, Cursor must follow these rules. Copy this entire section into Cursor's project context or rules file.
+
+---
+
+### 5.1 Code Quality Standards
+
+#### Required Tooling (Run Before Every Commit)
+
+```powershell
+# Format all code
+go fmt ./...
+
+# Organize imports
+goimports -w .
+
+# Check for suspicious code patterns
+go vet ./...
+
+# Lint for issues (install once: go install honnef.co/go/tools/cmd/staticcheck@latest)
+staticcheck ./...
+
+# Build must succeed
+go build -o agent.exe
+```
+
+**All commands must pass with no errors or warnings before committing.**
+
+#### Naming Conventions
+
+| Element | Convention | Example |
+|---------|------------|---------|
+| Packages | lowercase, single word | `scanner`, `config`, `api` |
+| Exported functions/types | PascalCase | `ScanNetwork`, `Device` |
+| Unexported functions/vars | camelCase | `parseARPOutput`, `retryCount` |
+| Interfaces | `-er` suffix | `Scanner`, `Handler`, `Reader` |
+| Constants | PascalCase | `MaxRetries`, `DefaultTimeout` |
+| Files | lowercase, underscores ok | `arp_scanner.go`, `config.go` |
+
+**Forbidden package names**: `utils`, `helpers`, `common`, `misc`, `shared`
+
+#### Error Handling Rules
+
+```go
+// ✅ CORRECT: Always check errors
+result, err := doSomething()
+if err != nil {
+    return fmt.Errorf("failed to do something: %w", err)
+}
+
+// ✅ CORRECT: Wrap errors with context
+if err := scanner.Scan(); err != nil {
+    return fmt.Errorf("network scan failed on interface %s: %w", iface, err)
+}
+
+// ❌ FORBIDDEN: Never ignore errors
+result, _ := doSomething()  // NEVER DO THIS
+
+// ❌ FORBIDDEN: Never match error strings
+if strings.Contains(err.Error(), "timeout") { }  // NEVER DO THIS
+
+// ❌ FORBIDDEN: No capitalized or punctuated error messages
+return fmt.Errorf("Failed to connect.")  // WRONG
+return fmt.Errorf("failed to connect")   // CORRECT
+```
+
+#### Code Organization Rules
+
+```go
+// ✅ CORRECT: Context as first parameter
+func ScanNetwork(ctx context.Context, iface string) ([]Device, error) { }
+
+// ✅ CORRECT: Group imports in order
+import (
+    // Standard library
+    "context"
+    "fmt"
+    "net"
+    
+    // Third-party packages
+    "github.com/spf13/cobra"
+    "gopkg.in/yaml.v3"
+    
+    // Local packages
+    "networkcloud-agent/api"
+    "networkcloud-agent/config"
+)
+
+// ✅ CORRECT: Define constants, no magic numbers
+const (
+    MaxRetries     = 3
+    DefaultTimeout = 5 * time.Second
+    ScanInterval   = 60 * time.Second
+)
+
+// ❌ FORBIDDEN: Magic numbers
+for i := 0; i < 3; i++ { }           // WRONG - use MaxRetries
+time.Sleep(5 * time.Second)          // WRONG - use DefaultTimeout
+```
+
+#### Function Rules
+
+- Keep functions **small and focused** (one responsibility)
+- Maximum **50 lines** per function (prefer shorter)
+- Use **multiple return values** (value, error)
+- Document all **exported functions** with Godoc comments
+
+```go
+// ScanNetwork discovers all devices on the specified network interface.
+// It returns a slice of discovered devices and any error encountered.
+// If iface is empty, it auto-detects the primary network interface.
+func ScanNetwork(ctx context.Context, iface string) ([]Device, error) {
+    // Implementation
+}
+```
+
+---
+
+### 5.2 Testing Requirements
+
+#### Before Every Commit
+
+Run these tests in order:
+
+```powershell
+# 1. Code must compile
+go build -o agent.exe
+if ($LASTEXITCODE -ne 0) { Write-Error "Build failed"; exit 1 }
+
+# 2. All unit tests must pass
+go test ./...
+if ($LASTEXITCODE -ne 0) { Write-Error "Tests failed"; exit 1 }
+
+# 3. Network scan must work (requires Admin)
+.\agent.exe scan
+# Verify: Should list discovered devices or show "no devices found"
+
+# 4. Full loop must connect to API
+.\agent.exe run
+# Verify: Should show "heartbeat successful" and "sync complete"
+# Press Ctrl+C to stop
+
+# 5. Check dashboard
+# Open NetworkCloud web app and verify devices appear
+```
+
+#### When to Write Unit Tests
+
+- **Always**: For API client functions (mock HTTP responses)
+- **Always**: For configuration parsing
+- **Always**: For MAC/IP address validation
+- **Recommended**: For ARP output parsing
+- **Optional**: For Windows Service lifecycle (hard to test)
+
+#### Test File Naming
+
+```
+scanner/
+├── scanner.go          # Implementation
+└── scanner_test.go     # Tests for scanner.go
+```
+
+---
+
+### 5.3 Git Workflow
+
+#### Before Starting Work
+
+```powershell
+# Always start from main
+git checkout main
+
+# Pull latest changes
+git pull origin main
+
+# Create feature branch
+git checkout -b feature/your-feature-name
+```
+
+#### Branch Naming
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| New feature | `feature/description` | `feature/add-hostname-resolution` |
+| Bug fix | `fix/description` | `fix/timeout-handling` |
+| Documentation | `docs/description` | `docs/update-readme` |
+| Refactoring | `refactor/description` | `refactor/api-client` |
+
+#### Commit Message Format
+
+Use conventional commits:
+
+```
+type: short description
+
+<optional longer description>
+```
+
+| Type | Use For |
+|------|---------|
+| `feat` | New features |
+| `fix` | Bug fixes |
+| `docs` | Documentation changes |
+| `refactor` | Code changes that don't add features or fix bugs |
+| `test` | Adding or fixing tests |
+| `chore` | Build, config, tooling changes |
+
+**Examples:**
+
+```
+feat: add network interface auto-detection
+
+fix: handle connection timeout gracefully
+
+docs: add configuration examples to README
+
+refactor: extract ARP parsing into separate function
+
+test: add unit tests for API client
+
+chore: update dependencies
+```
+
+#### Before Pushing
+
+```powershell
+# Format and lint
+go fmt ./...
+go vet ./...
+staticcheck ./...
+
+# Run tests
+go test ./...
+
+# Review your changes
+git status
+git diff
+
+# Stage and commit
+git add .
+git commit -m "feat: your message here"
+
+# Push
+git push origin feature/your-branch-name
+```
+
+#### Merge Workflow
+
+1. Push feature branch to GitHub
+2. Create Pull Request
+3. Review changes
+4. Merge to main
+5. Delete feature branch
+
+---
+
+### 5.4 Security Rules
+
+#### Absolute Rules (Never Break These)
+
+| Rule | Why |
+|------|-----|
+| **Never commit `config.yaml`** | Contains API tokens |
+| **Never log tokens** | Could expose in error messages |
+| **Never hardcode tokens** | Must come from config file |
+| **Never commit `.exe` files** | Binary files don't belong in Git |
+| **Never commit log files** | May contain sensitive data |
+
+#### Before Every Commit, Verify:
+
+```powershell
+# Check what you're about to commit
+git status
+
+# These should NEVER be staged:
+#   - config.yaml (real config)
+#   - *.log files
+#   - *.exe files
+#   - Any file containing tokens
+
+# Verify .gitignore is working
+git check-ignore config.yaml  # Should output: config.yaml
+```
+
+#### Secure Logging
+
+```go
+// ✅ CORRECT: Mask tokens in logs
+log.Printf("API URL: %s", config.API.BaseURL)
+log.Printf("Token: %s...", config.API.Token[:10])  // Only first 10 chars
+
+// ❌ FORBIDDEN: Never log full tokens
+log.Printf("Token: %s", config.API.Token)  // NEVER
+```
+
+#### Required .gitignore Entries
+
+Ensure these are in the root `.gitignore`:
+
+```
+# Agent configuration (contains API tokens)
+agent/config.yaml
+agent/*.log
+agent/*.exe
+```
+
+---
+
+### 5.5 Documentation Requirements
+
+#### When to Update Documentation
+
+| Change Made | Update Required |
+|-------------|-----------------|
+| New CLI command | Update README.md |
+| New config option | Update config.example.yaml |
+| Changed API behavior | Note in commit message |
+| New dependency | Update go.mod description |
+| Breaking change | Update README.md with migration steps |
+
+#### Required Godoc Comments
+
+Every exported item must have documentation:
+
+```go
+// Package scanner provides network device discovery functionality.
+// It uses ARP scanning to find devices on the local network.
+package scanner
+
+// Device represents a network device discovered during scanning.
+type Device struct {
+    // IPAddress is the IPv4 address of the device.
+    IPAddress string
+    
+    // MACAddress is the hardware address in format AA:BB:CC:DD:EE:FF.
+    MACAddress string
+    
+    // Hostname is the resolved DNS name, or "Unknown" if resolution fails.
+    Hostname string
+}
+
+// Scan discovers all devices on the specified network interface.
+// If iface is empty, it auto-detects the primary interface.
+// Returns ErrNoInterface if no suitable interface is found.
+func Scan(ctx context.Context, iface string) ([]Device, error) {
+    // Implementation
+}
+```
+
+---
+
+### 5.6 Monorepo Rules
+
+#### Folder Boundaries
+
+| Folder | Owner | Can Modify? |
+|--------|-------|-------------|
+| `agent/` | Cursor (local) | ✅ Yes |
+| `client/` | Replit Agent | ❌ No |
+| `server/` | Replit Agent | ❌ No |
+| `shared/` | Replit Agent | ❌ No |
+| `docs/` | Both | ⚠️ Coordinate |
+
+#### Avoid Conflicts
+
+1. **Never modify** files outside `agent/` folder
+2. **Pull before starting** any work session
+3. **Coordinate** if you need to update `docs/AGENT_API.md`
+4. **Don't push to main directly** - use feature branches
+
+#### Syncing Changes
+
+```powershell
+# Before starting work - get latest web app changes
+cd C:\Projects\networkcloud
+git pull origin main
+
+# After web app changes in Replit - sync locally
+git pull origin main
+```
+
+---
+
+### 5.7 Windows-Specific Rules
+
+#### Administrator Requirements
+
+| Feature | Requires Admin? |
+|---------|----------------|
+| ARP scanning | ✅ Yes |
+| Service install | ✅ Yes |
+| Service start/stop | ✅ Yes |
+| Foreground mode (`run`) | ⚠️ Recommended |
+| Single scan (`scan`) | ✅ Yes |
+
+#### Path Handling
+
+```go
+// ✅ CORRECT: Use filepath for Windows compatibility
+import "path/filepath"
+
+configPath := filepath.Join(os.Getenv("APPDATA"), "NetworkCloud", "config.yaml")
+
+// ❌ FORBIDDEN: Don't hardcode slashes
+configPath := os.Getenv("APPDATA") + "/NetworkCloud/config.yaml"  // WRONG
+```
+
+#### Testing Checklist
+
+- [ ] Test in PowerShell (recommended)
+- [ ] Test in Command Prompt (verify compatibility)
+- [ ] Test as Administrator
+- [ ] Test Service install/uninstall cycle
+- [ ] Check Windows Event Viewer for errors
+- [ ] Verify firewall isn't blocking
+
+---
+
+### 5.8 API Compatibility
+
+#### Strict Requirements
+
+The agent MUST match the API contract in `docs/AGENT_API.md`:
+
+| Aspect | Requirement |
+|--------|-------------|
+| MAC format | `AA:BB:CC:DD:EE:FF` (uppercase, colons) |
+| Status values | Only `online`, `offline`, `away` |
+| Auth header | `Authorization: Bearer <token>` |
+| Content-Type | `application/json` |
+
+#### Before Pushing API Changes
+
+1. Test against actual running web app
+2. Verify response parsing matches expected format
+3. Check error responses are handled gracefully
+4. Confirm sync endpoint behavior (creates, updates, AND deletes)
+
+---
+
+### 5.9 Pre-Commit Checklist
+
+Run through this checklist before every commit:
+
+```
+□ go fmt ./... passes
+□ go vet ./... passes
+□ staticcheck ./... passes (no errors)
+□ go build succeeds
+□ go test ./... passes
+□ agent.exe scan works
+□ agent.exe run connects to API
+□ No config.yaml in staged files
+□ No .exe files in staged files
+□ No log files in staged files
+□ Commit message follows convention
+□ Only agent/ files modified (unless docs update)
+□ README updated if needed
+□ config.example.yaml updated if config changed
+```
+
+---
+
+## Part 6: Cursor AI Prompt
 
 Copy and paste this entire block into Cursor's chat window:
 
@@ -206,9 +670,10 @@ Authorization: Bearer nc_xxxxx
 
 Implement local network discovery:
 
-**Discovery method**: ARP scanning
-- Use `github.com/google/gopacket` for packet capture
-- Fall back to `arp -a` command parsing if gopacket fails
+**Discovery method**: Ping sweep + ARP table (no Npcap required)
+- Ping all IPs in the local subnet concurrently
+- Parse Windows `arp -a` command output for MAC addresses
+- This approach works without any additional software installation
 
 **For each discovered device, collect**:
 - IP address (required)
@@ -298,7 +763,6 @@ Add these to go.mod:
 
 ```
 github.com/kardianos/service   # Windows Service
-github.com/google/gopacket     # Packet capture (ARP)
 github.com/spf13/cobra         # CLI framework
 gopkg.in/yaml.v3               # YAML config
 ```
@@ -306,12 +770,11 @@ gopkg.in/yaml.v3               # YAML config
 Install with:
 ```powershell
 go get github.com/kardianos/service
-go get github.com/google/gopacket
 go get github.com/spf13/cobra
 go get gopkg.in/yaml.v3
 ```
 
-**Note**: gopacket requires Npcap on Windows. Download from: https://npcap.com/
+**Note**: No additional software (like Npcap) is required. The agent uses Windows built-in commands for network scanning.
 
 ## Sample config.example.yaml
 
@@ -350,9 +813,9 @@ logging:
 
 ## Important Notes
 
-1. **Administrator Required**: ARP scanning needs elevated privileges
-2. **Npcap Required**: Install from https://npcap.com/ for packet capture
-3. **Firewall**: May need Windows Firewall exceptions
+1. **Administrator Required**: Network scanning needs elevated privileges
+2. **No Npcap Needed**: Uses Windows built-in ping and ARP commands
+3. **Firewall**: May need Windows Firewall exceptions for ICMP
 4. **Token Security**: Never commit config.yaml with real tokens
 
 ## Testing Steps
@@ -420,9 +883,12 @@ Get-EventLog -LogName Application -Source NetworkCloudAgent -Newest 20
 
 ARP scanning requires Administrator privileges. Right-click PowerShell and select "Run as Administrator".
 
-### "Npcap not found" or gopacket errors
+### Ping or ARP commands fail
 
-Install Npcap from https://npcap.com/. During installation, check "Install Npcap in WinPcap API-compatible mode".
+If network commands aren't working:
+- Ensure you're running as Administrator
+- Check Windows Firewall allows ICMP (ping)
+- Verify network interface is connected
 
 ### No devices found
 
@@ -457,7 +923,7 @@ If this fails:
 2. Common issues:
    - Config file not found (copy to `%APPDATA%\NetworkCloud\config.yaml`)
    - Invalid token
-   - Npcap not installed
+   - Missing Administrator privileges
 
 ---
 
@@ -476,12 +942,17 @@ If this fails:
 # From the agent folder
 cd C:\Projects\networkcloud\agent
 
+# Create feature branch (follow Part 5.3 workflow)
+git checkout -b feature/your-feature-name
+
 # Stage and commit
 git add .
-git commit -m "Add network scanning feature"
+git commit -m "feat: add network scanning feature"
 
-# Push to GitHub
-git push origin main
+# Push feature branch to GitHub
+git push origin feature/your-feature-name
+
+# Then create a Pull Request on GitHub to merge to main
 ```
 
 ### Updating the Web App
