@@ -120,11 +120,17 @@ export async function registerRoutes(
         createdAt: t.createdAt,
         revokedAt: t.revokedAt,
         approved: t.approved,
+        agentUuid: t.agentUuid,
         agentMacAddress: t.agentMacAddress,
         agentHostname: t.agentHostname,
         agentIpAddress: t.agentIpAddress,
         firstConnectedAt: t.firstConnectedAt,
         lastHeartbeatAt: t.lastHeartbeatAt,
+        pendingAgentUuid: t.pendingAgentUuid,
+        pendingAgentMacAddress: t.pendingAgentMacAddress,
+        pendingAgentHostname: t.pendingAgentHostname,
+        pendingAgentIpAddress: t.pendingAgentIpAddress,
+        pendingAgentAt: t.pendingAgentAt,
       })));
     } catch (error) {
       console.error("Error fetching agent tokens:", error);
@@ -226,6 +232,52 @@ export async function registerRoutes(
     }
   });
 
+  // Approve pending replacement agent
+  app.post(api.agentTokens.approveReplacement.path, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const tokenId = parseInt(req.params.id);
+      
+      if (isNaN(tokenId)) {
+        return res.status(400).json({ message: "Invalid token ID" });
+      }
+      
+      const approved = await storage.approveReplacement(tokenId, userId);
+      
+      if (!approved) {
+        return res.status(404).json({ message: "Token not found or no pending replacement" });
+      }
+      
+      res.json({ message: "Replacement agent approved successfully" });
+    } catch (error) {
+      console.error("Error approving replacement:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  });
+
+  // Reject pending replacement agent (keep current agent)
+  app.post(api.agentTokens.rejectPending.path, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const tokenId = parseInt(req.params.id);
+      
+      if (isNaN(tokenId)) {
+        return res.status(400).json({ message: "Invalid token ID" });
+      }
+      
+      const cleared = await storage.clearPendingAgent(tokenId, userId);
+      
+      if (!cleared) {
+        return res.status(404).json({ message: "Token not found" });
+      }
+      
+      res.json({ message: "Pending replacement rejected, current agent retained" });
+    } catch (error) {
+      console.error("Error rejecting pending agent:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  });
+
   // === AGENT API (Called by the agent) ===
   
   // Enable CORS for all agent API endpoints
@@ -260,11 +312,23 @@ export async function registerRoutes(
       // Check if this is a different agent trying to use an ALREADY CONNECTED token
       // Use UUID for mismatch detection (more reliable than MAC)
       if (tokenBefore.agentUuid && tokenBefore.agentUuid !== agentUuid) {
-        // Different agent detected! Alert the user
+        // Different agent detected - store as pending replacement instead of blocking
+        await storage.storePendingAgent(tokenId, agentUuid, macAddress, hostname, ipAddress || "");
+        await storage.updateAgentTokenLastUsed(tokenId);
         return res.json({
-          status: "device_mismatch",
+          status: "pending_reauthorization",
           serverTime: new Date().toISOString(),
-          message: "A different agent is attempting to use this token. Please check your dashboard.",
+          message: "A different agent is requesting to use this token. Waiting for user to approve replacement.",
+        });
+      }
+      
+      // Check if this agent is the pending one (already stored, waiting for approval)
+      if (tokenBefore.pendingAgentUuid && tokenBefore.pendingAgentUuid === agentUuid) {
+        await storage.updateAgentTokenLastUsed(tokenId);
+        return res.json({
+          status: "pending_reauthorization",
+          serverTime: new Date().toISOString(),
+          message: "Waiting for user to approve this agent as replacement.",
         });
       }
       

@@ -83,19 +83,19 @@ Content-Type: application/json
 ```
 When the agent receives this status, it should continue sending heartbeats but NOT sync devices yet. The user must approve the agent in the web dashboard first.
 
-**Response (200 OK) - Agent Mismatch:**
+**Response (200 OK) - Pending Reauthorization:**
 ```json
 {
-  "status": "device_mismatch",
+  "status": "pending_reauthorization",
   "serverTime": "2024-01-19T12:00:00.000Z",
-  "message": "A different agent is attempting to use this token. Please check your dashboard."
+  "message": "A different agent is requesting to use this token. Waiting for user to approve replacement."
 }
 ```
-This occurs when a different agent UUID is detected for an already-connected token. This could indicate:
-- Token was moved to a different agent installation (legitimate)
-- Token was leaked and used by someone else (security concern)
+This occurs when a different agent UUID is detected for an already-connected token. The new agent's info is stored as a "pending replacement" and the user must decide in the dashboard whether to:
+- **Approve Replacement**: Replace the current agent with the new one
+- **Keep Current**: Reject the pending agent and keep the current one
 
-The agent should log a warning and continue retrying. The user can either approve the new agent or revoke the token.
+This workflow allows legitimate token transfers (e.g., moving agent to new machine) while alerting users to potential security concerns.
 
 **Status Values:**
 
@@ -103,7 +103,7 @@ The agent should log a warning and continue retrying. The user can either approv
 |--------|---------|--------------|
 | `ok` | Approved and connected | Proceed with device sync |
 | `pending_approval` | First connection, awaiting user approval | Keep heartbeating, don't sync |
-| `device_mismatch` | Different device using same token | Log warning, keep heartbeating |
+| `pending_reauthorization` | Different agent trying to use token, awaiting user decision | Keep heartbeating, don't sync |
 
 **Errors:**
 - `400 Bad Request` - Missing or invalid agentUuid/macAddress/hostname
@@ -494,6 +494,13 @@ Currently no rate limits are enforced, but please be reasonable:
 ---
 
 ## Changelog
+
+**v1.2.0** (January 2026)
+- Added pending replacement workflow for agent identity conflicts
+- New `pending_reauthorization` status in heartbeat response
+- Dashboard UI shows side-by-side comparison of current vs pending agent
+- User can approve replacement or keep current agent
+- New endpoints: `/api/agent-tokens/:id/approve-replacement` and `/api/agent-tokens/:id/reject-pending`
 
 **v1.1.0** (January 2026)
 - Added UUID-based agent identity (agentUuid field in heartbeat)

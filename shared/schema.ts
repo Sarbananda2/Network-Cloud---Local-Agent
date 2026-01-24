@@ -26,6 +26,12 @@ export const agentTokens = pgTable("agent_tokens", {
   agentIpAddress: text("agent_ip_address"),
   firstConnectedAt: timestamp("first_connected_at"),
   lastHeartbeatAt: timestamp("last_heartbeat_at"),
+  // Pending replacement fields (for when a different agent tries to use this token)
+  pendingAgentUuid: varchar("pending_agent_uuid", { length: 36 }),
+  pendingAgentMacAddress: varchar("pending_agent_mac_address", { length: 17 }),
+  pendingAgentHostname: text("pending_agent_hostname"),
+  pendingAgentIpAddress: text("pending_agent_ip_address"),
+  pendingAgentAt: timestamp("pending_agent_at"),
 });
 
 export const agentTokensRelations = relations(agentTokens, ({ one }) => ({
@@ -126,6 +132,11 @@ export const insertAgentTokenSchema = createInsertSchema(agentTokens).omit({
   agentIpAddress: true,
   firstConnectedAt: true,
   lastHeartbeatAt: true,
+  pendingAgentUuid: true,
+  pendingAgentMacAddress: true,
+  pendingAgentHostname: true,
+  pendingAgentIpAddress: true,
+  pendingAgentAt: true,
 });
 
 export type InsertAgentToken = z.infer<typeof insertAgentTokenSchema>;
@@ -145,6 +156,12 @@ export interface AgentTokenResponse {
   agentIpAddress: string | null;
   firstConnectedAt: Date | null;
   lastHeartbeatAt: Date | null;
+  // Pending replacement fields
+  pendingAgentUuid: string | null;
+  pendingAgentMacAddress: string | null;
+  pendingAgentHostname: string | null;
+  pendingAgentIpAddress: string | null;
+  pendingAgentAt: Date | null;
 }
 
 export interface AgentTokenCreateResponse extends AgentTokenResponse {

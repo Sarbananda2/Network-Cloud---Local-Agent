@@ -46,6 +46,11 @@ interface AgentToken {
   agentIpAddress: string | null;
   firstConnectedAt: string | null;
   lastHeartbeatAt: string | null;
+  pendingAgentUuid: string | null;
+  pendingAgentMacAddress: string | null;
+  pendingAgentHostname: string | null;
+  pendingAgentIpAddress: string | null;
+  pendingAgentAt: string | null;
 }
 
 interface NewTokenResponse {
@@ -150,6 +155,46 @@ export default function AgentTokens() {
     },
   });
 
+  const approveReplacementMutation = useMutation({
+    mutationFn: async (tokenId: number) => {
+      await apiRequest("POST", `/api/agent-tokens/${tokenId}/approve-replacement`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Replacement approved",
+        description: "The new agent has replaced the previous one.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/agent-tokens"] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to approve replacement. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const rejectPendingMutation = useMutation({
+    mutationFn: async (tokenId: number) => {
+      await apiRequest("POST", `/api/agent-tokens/${tokenId}/reject-pending`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Pending rejected",
+        description: "The pending agent has been rejected. Current agent retained.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/agent-tokens"] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to reject pending agent. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleCreateToken = () => {
     if (!newTokenName.trim()) {
       toast({
@@ -185,7 +230,8 @@ export default function AgentTokens() {
   
   // Further categorize active tokens
   const pendingApproval = activeTokens.filter(t => t.agentMacAddress && !t.approved);
-  const approvedAgents = activeTokens.filter(t => t.approved);
+  const approvedAgents = activeTokens.filter(t => t.approved && !t.pendingAgentUuid);
+  const pendingReplacement = activeTokens.filter(t => t.approved && t.pendingAgentUuid);
   const neverConnected = activeTokens.filter(t => !t.agentMacAddress && !t.approved);
 
   const isRecentlyActive = (lastHeartbeat: string | null) => {
@@ -345,6 +391,103 @@ export default function AgentTokens() {
                               >
                                 <XCircle className="w-4 h-4 mr-1" />
                                 Reject
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
+            {/* Pending Replacement Section */}
+            {pendingReplacement.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <Card className="border-orange-500/50 bg-orange-500/5">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-orange-600">
+                      <AlertTriangle className="w-5 h-5" />
+                      Pending Replacement ({pendingReplacement.length})
+                    </CardTitle>
+                    <CardDescription>
+                      A different agent is trying to use these tokens. Approve to replace the current agent, or reject to keep the current one.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="divide-y divide-border">
+                      {pendingReplacement.map((token) => (
+                        <div 
+                          key={token.id} 
+                          className="py-4 first:pt-0 last:pb-0"
+                          data-testid={`row-pending-replacement-${token.id}`}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-orange-500/20 rounded-full flex items-center justify-center">
+                                  <AlertTriangle className="w-5 h-5 text-orange-600" />
+                                </div>
+                                <div>
+                                  <p className="font-medium text-foreground" data-testid={`text-token-name-${token.id}`}>
+                                    {token.name}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">
+                                    Different agent wants to take over
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="p-3 bg-muted/50 rounded-lg">
+                                  <p className="text-xs font-medium text-muted-foreground mb-2">Current Agent</p>
+                                  <div className="space-y-1 text-sm">
+                                    <div className="flex items-center gap-2">
+                                      <Monitor className="w-3 h-3 text-muted-foreground" />
+                                      <span>{token.agentHostname || "Unknown"}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Key className="w-3 h-3 text-muted-foreground" />
+                                      <code className="text-xs">{token.agentMacAddress}</code>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="p-3 bg-orange-500/10 rounded-lg border border-orange-500/30">
+                                  <p className="text-xs font-medium text-orange-600 mb-2">New Agent (Pending)</p>
+                                  <div className="space-y-1 text-sm">
+                                    <div className="flex items-center gap-2">
+                                      <Monitor className="w-3 h-3 text-orange-600" />
+                                      <span>{token.pendingAgentHostname || "Unknown"}</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Key className="w-3 h-3 text-orange-600" />
+                                      <code className="text-xs">{token.pendingAgentMacAddress}</code>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              <Button
+                                size="sm"
+                                onClick={() => approveReplacementMutation.mutate(token.id)}
+                                disabled={approveReplacementMutation.isPending}
+                                data-testid={`button-approve-replacement-${token.id}`}
+                              >
+                                <CheckCircle2 className="w-4 h-4 mr-1" />
+                                Replace
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => rejectPendingMutation.mutate(token.id)}
+                                disabled={rejectPendingMutation.isPending}
+                                data-testid={`button-reject-pending-${token.id}`}
+                              >
+                                <XCircle className="w-4 h-4 mr-1" />
+                                Keep Current
                               </Button>
                             </div>
                           </div>

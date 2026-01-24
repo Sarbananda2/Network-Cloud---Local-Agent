@@ -25,6 +25,11 @@ export interface IStorage {
   approveAgentToken(id: number, userId: string): Promise<boolean>;
   rejectAgentToken(id: number, userId: string): Promise<boolean>;
   
+  // Pending replacement operations
+  storePendingAgent(id: number, agentUuid: string, macAddress: string, hostname: string, ipAddress: string): Promise<AgentToken | undefined>;
+  clearPendingAgent(id: number, userId: string): Promise<boolean>;
+  approveReplacement(id: number, userId: string): Promise<boolean>;
+  
   // Account management
   deleteAccount(userId: string): Promise<void>;
 }
@@ -165,7 +170,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async rejectAgentToken(id: number, userId: string): Promise<boolean> {
-    // Rejecting clears the agent info and sets approved to false
+    // Rejecting clears the agent info and pending info, sets approved to false
     const result = await db.update(agentTokens)
       .set({ 
         approved: false,
@@ -175,8 +180,73 @@ export class DatabaseStorage implements IStorage {
         agentIpAddress: null,
         firstConnectedAt: null,
         lastHeartbeatAt: null,
+        pendingAgentUuid: null,
+        pendingAgentMacAddress: null,
+        pendingAgentHostname: null,
+        pendingAgentIpAddress: null,
+        pendingAgentAt: null,
       })
       .where(and(eq(agentTokens.id, id), eq(agentTokens.userId, userId)))
+      .returning();
+    return result.length > 0;
+  }
+
+  async storePendingAgent(id: number, agentUuid: string, macAddress: string, hostname: string, ipAddress: string): Promise<AgentToken | undefined> {
+    const now = new Date();
+    const [updated] = await db.update(agentTokens)
+      .set({
+        pendingAgentUuid: agentUuid,
+        pendingAgentMacAddress: macAddress,
+        pendingAgentHostname: hostname,
+        pendingAgentIpAddress: ipAddress,
+        pendingAgentAt: now,
+      })
+      .where(eq(agentTokens.id, id))
+      .returning();
+    return updated;
+  }
+
+  async clearPendingAgent(id: number, userId: string): Promise<boolean> {
+    const result = await db.update(agentTokens)
+      .set({
+        pendingAgentUuid: null,
+        pendingAgentMacAddress: null,
+        pendingAgentHostname: null,
+        pendingAgentIpAddress: null,
+        pendingAgentAt: null,
+      })
+      .where(and(eq(agentTokens.id, id), eq(agentTokens.userId, userId)))
+      .returning();
+    return result.length > 0;
+  }
+
+  async approveReplacement(id: number, userId: string): Promise<boolean> {
+    // Get the pending agent info
+    const [token] = await db.select().from(agentTokens)
+      .where(and(eq(agentTokens.id, id), eq(agentTokens.userId, userId)));
+    
+    if (!token || !token.pendingAgentUuid) {
+      return false;
+    }
+
+    // Move pending agent to active agent, clear pending fields
+    const now = new Date();
+    const result = await db.update(agentTokens)
+      .set({
+        agentUuid: token.pendingAgentUuid,
+        agentMacAddress: token.pendingAgentMacAddress,
+        agentHostname: token.pendingAgentHostname,
+        agentIpAddress: token.pendingAgentIpAddress,
+        firstConnectedAt: now,
+        lastHeartbeatAt: now,
+        approved: true,
+        pendingAgentUuid: null,
+        pendingAgentMacAddress: null,
+        pendingAgentHostname: null,
+        pendingAgentIpAddress: null,
+        pendingAgentAt: null,
+      })
+      .where(eq(agentTokens.id, id))
       .returning();
     return result.length > 0;
   }

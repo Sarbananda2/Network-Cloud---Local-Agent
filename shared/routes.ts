@@ -79,6 +79,11 @@ export const api = {
           agentIpAddress: z.string().nullable(),
           firstConnectedAt: z.date().nullable(),
           lastHeartbeatAt: z.date().nullable(),
+          pendingAgentUuid: z.string().nullable(),
+          pendingAgentMacAddress: z.string().nullable(),
+          pendingAgentHostname: z.string().nullable(),
+          pendingAgentIpAddress: z.string().nullable(),
+          pendingAgentAt: z.date().nullable(),
         })),
         401: errorSchemas.unauthorized,
       },
@@ -121,6 +126,24 @@ export const api = {
     reject: {
       method: 'POST' as const,
       path: '/api/agent-tokens/:id/reject',
+      responses: {
+        200: z.object({ message: z.string() }),
+        404: errorSchemas.notFound,
+        401: errorSchemas.unauthorized,
+      },
+    },
+    approveReplacement: {
+      method: 'POST' as const,
+      path: '/api/agent-tokens/:id/approve-replacement',
+      responses: {
+        200: z.object({ message: z.string() }),
+        404: errorSchemas.notFound,
+        401: errorSchemas.unauthorized,
+      },
+    },
+    rejectPending: {
+      method: 'POST' as const,
+      path: '/api/agent-tokens/:id/reject-pending',
       responses: {
         200: z.object({ message: z.string() }),
         404: errorSchemas.notFound,
@@ -177,7 +200,7 @@ export const api = {
       }),
       responses: {
         200: z.object({
-          status: z.enum(['ok', 'pending_approval', 'device_mismatch']),
+          status: z.enum(['ok', 'pending_approval', 'pending_reauthorization']),
           serverTime: z.string(),
           message: z.string().optional(),
         }),
