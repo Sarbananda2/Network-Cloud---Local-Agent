@@ -1,0 +1,25 @@
+# NetworkCloud Agent Configuration
+# Copy this file to agent.yaml and update values
+
+# Server URL (required)
+server_url: "https://network-cloud.replit.app"
+
+# Heartbeat interval in seconds (default: 30)
+heartbeat_interval: 30
+
+# Device sync interval in seconds (default: 300)
+sync_interval: 300
+
+# Network change check interval in seconds (default: 60)
+network_check_interval: 60
+
+# Log level: debug, info, warn, error (default: info)
+log_level: "info"
+
+# Log file path (optional, defaults to stdout)
+# Example: "C:\\ProgramData\\NetworkCloud\\agent.log"
+log_file: ""
+
+# Enable auto-start on system boot (default: true)
+auto_start: true
+
