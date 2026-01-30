@@ -166,6 +166,8 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    position: relative;
+    padding-right: 56px;
 }
 
 .stat-icon {
@@ -177,6 +179,9 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    position: absolute;
+    top: 16px;
+    right: 16px;
 }
 
 .stat-icon svg {
@@ -332,9 +337,18 @@
 }
 
 .adapter-preview {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    display: flex;
     gap: 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 6px;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.adapter-preview::-webkit-scrollbar {
+    display: none;
 }
 
 .preview-card {
@@ -342,6 +356,8 @@
     border-radius: 12px;
     background: var(--surface-strong);
     border: 1px solid var(--border-subtle);
+    min-width: 200px;
+    flex: 0 0 auto;
 }
 
 .preview-title {

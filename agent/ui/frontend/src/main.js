@@ -308,6 +308,16 @@ let lastNetworkResponse = null;
 let lastStatusResponse = null;
 let activeAdapterKey = null;
 
+if (dashboardAdapterPreviewEl) {
+  dashboardAdapterPreviewEl.addEventListener('wheel', (event) => {
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
+      return;
+    }
+    dashboardAdapterPreviewEl.scrollLeft += event.deltaY;
+    event.preventDefault();
+  }, { passive: false });
+}
+
 function capitalize(value) {
   if (!value) {
     return '-';
@@ -620,7 +630,10 @@ function updateDashboardNetwork(resp) {
     }
   }
   if (dashboardAdapterPreviewEl) {
-    dashboardAdapterPreviewEl.innerHTML = adapters.slice(0, 6).map((adapter) => `
+    const previewAdapters = adapters
+      .slice()
+      .sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
+    dashboardAdapterPreviewEl.innerHTML = previewAdapters.map((adapter) => `
       <div class="preview-card">
         <div class="preview-title">${adapter.name}</div>
         <div class="preview-subtitle adapter-type">${adapter.type}</div>
@@ -700,7 +713,10 @@ function renderNetwork(resp) {
     button.classList.toggle('active', filterKey === activeNetworkFilter);
   });
 
-  const filteredAdapters = allAdapters.filter(matchesNetworkFilter);
+  const filteredAdapters = allAdapters
+    .filter(matchesNetworkFilter)
+    .slice()
+    .sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
   networkListEl.innerHTML = filteredAdapters
     .map((adapter) => renderAdapterCard(adapter, adapterKey(adapter)))
     .join('');
