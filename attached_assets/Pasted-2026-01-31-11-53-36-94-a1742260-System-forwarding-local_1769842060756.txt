@@ -1,0 +1,100 @@
+2026-01-31 11:53:36.94
+a1742260
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-31 11:53:37.68
+a1742260
+User
+6:23:37 AM [express] serving on port 5000
+2026-01-31 11:58:33.40
+a1742260
+User
+6:28:33 AM [express] POST /api/device/authorize 200 in 734ms :: {"device_code":"X8CG1VXg_H1Ok5U3OveszaRVFI6KB1_tuA9UydJ_VYk","user_code":"X7UU-T5HK","verification_uri":"https://network-cloud.replit.app/link","expires_in":900,"interval":5}
+2026-01-31 12:07:04.31
+a1742260
+User
+6:37:04 AM [express] POST /api/device/authorize 200 in 669ms :: {"device_code":"0w9SJczSMJ_BvgOlE86p73ln7VPQjnJGUa4DsY9JWSI","user_code":"HR3S-NAWH","verification_uri":"https://network-cloud.replit.app/link","expires_in":900,"interval":5}
+2026-01-31 12:07:18.34
+a1742260
+User
+6:37:18 AM [express] GET /api/auth/user 304 in 467ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-27T18:11:49.964Z"}
+2026-01-31 12:07:18.75
+a1742260
+User
+6:37:18 AM [express] GET /api/devices 304 in 96ms :: [{"id":7,"userId":"25269572","agentTokenId":16,"name":"MacBook-Air-YS8Q","macAddress":"34:E6:B6:BB:15:FE","status":"online","lastSeenAt":"2026-01-27T18:13:35.267Z","createdAt":"2026-01-27T18:13:35.267Z"}]
+2026-01-31 12:07:35.98
+a1742260
+User
+6:37:35 AM [express] POST /api/device/verify 200 in 496ms :: {"hostname":"DESKTOP-BE5O3LU","macAddress":"68:54:5A:5B:5F:86","createdAt":"2026-01-31T06:37:04.262Z"}
+2026-01-31 12:07:38.78
+a1742260
+User
+6:37:38 AM [express] POST /api/device/approve 200 in 125ms :: {"success":true,"message":"Device linked successfully"}
+2026-01-31 12:07:46.29
+a1742260
+User
+6:37:46 AM [express] GET /api/auth/user 304 in 91ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-27T18:11:49.964Z"}
+2026-01-31 12:07:46.69
+a1742260
+User
+6:37:46 AM [express] GET /api/devices 304 in 89ms :: [{"id":7,"userId":"25269572","agentTokenId":16,"name":"MacBook-Air-YS8Q","macAddress":"34:E6:B6:BB:15:FE","status":"online","lastSeenAt":"2026-01-27T18:13:35.267Z","createdAt":"2026-01-27T18:13:35.267Z"}]
+2026-01-31 12:07:50.51
+a1742260
+User
+6:37:50 AM [express] POST /api/device/authorize 200 in 36ms :: {"device_code":"tj3mu88Sgk9FqM06wV6pQWtfef65lMVp7z9aia5meg8","user_code":"LE4D-PTBG","verification_uri":"https://network-cloud.replit.app/link","expires_in":900,"interval":5}
+2026-01-31 12:09:26.05
+a1742260
+User
+6:39:26 AM [express] GET /api/auth/user 304 in 277ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-27T18:11:49.964Z"}
+2026-01-31 12:09:26.45
+a1742260
+User
+6:39:26 AM [express] GET /api/devices 304 in 89ms :: [{"id":7,"userId":"25269572","agentTokenId":16,"name":"MacBook-Air-YS8Q","macAddress":"34:E6:B6:BB:15:FE","status":"online","lastSeenAt":"2026-01-27T18:13:35.267Z","createdAt":"2026-01-27T18:13:35.267Z"}]
+2026-01-31 12:13:39.59
+a1742260
+User
+Cleaned up 1 expired device authorizations
+2026-01-31 12:16:14.44
+a1742260
+User
+6:46:14 AM [express] POST /api/device/authorize 200 in 2589ms :: {"device_code":"355OH3a9fp_AmC5zSGY1vHGjnfZM9jfZeOTE16kHOo0","user_code":"Z28S-BG45","verification_uri":"https://network-cloud.replit.app/link","expires_in":900,"interval":5}
+2026-01-31 12:16:14.64
+a1742260
+User
+6:46:14 AM [express] POST /api/device/authorize 200 in 225ms :: {"device_code":"jBlJm7BefOksJ51eHOzcWUvGaA80FezKkO0Do2sAAYI","user_code":"A5GH-TZ4N","verification_uri":"https://network-cloud.replit.app/link","expires_in":900,"interval":5}
+2026-01-31 12:16:27.08
+a1742260
+User
+6:46:27 AM [express] GET /api/auth/user 304 in 590ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-27T18:11:49.964Z"}
+2026-01-31 12:16:42.19
+a1742260
+User
+6:46:42 AM [express] POST /api/device/verify 200 in 485ms :: {"hostname":"DESKTOP-BE5O3LU","macAddress":"68:54:5A:5B:5F:86","createdAt":"2026-01-31T06:46:14.620Z"}
+2026-01-31 12:16:44.80
+a1742260
+User
+6:46:44 AM [express] POST /api/device/approve 200 in 121ms :: {"success":true,"message":"Device linked successfully"}
+2026-01-31 12:16:56.46
+a1742260
+User
+6:46:56 AM [express] GET /api/auth/user 304 in 272ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-27T18:11:49.964Z"}
+2026-01-31 12:16:56.87
+a1742260
+User
+6:46:56 AM [express] GET /api/devices 304 in 98ms :: [{"id":7,"userId":"25269572","agentTokenId":16,"name":"MacBook-Air-YS8Q","macAddress":"34:E6:B6:BB:15:FE","status":"online","lastSeenAt":"2026-01-27T18:13:35.267Z","createdAt":"2026-01-27T18:13:35.267Z"}]
+2026-01-31 12:17:11.13
+a1742260
+User
+6:47:11 AM [express] GET /api/auth/user 304 in 271ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-27T18:11:49.964Z"}
+2026-01-31 12:17:11.54
+a1742260
+User
+6:47:11 AM [express] GET /api/devices 304 in 99ms :: [{"id":7,"userId":"25269572","agentTokenId":16,"name":"MacBook-Air-YS8Q","macAddress":"34:E6:B6:BB:15:FE","status":"online","lastSeenAt":"2026-01-27T18:13:35.267Z","createdAt":"2026-01-27T18:13:35.267Z"}]
+2026-01-31 12:17:13.58
+a1742260
+User
+6:47:13 AM [express] GET /api/auth/user 304 in 89ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-27T18:11:49.964Z"}
+2026-01-31 12:17:13.98
+a1742260
+User
+6:47:13 AM [express] GET /api/devices 304 in 88ms :: [{"id":7,"userId":"25269572","agentTokenId":16,"name":"MacBook-Air-YS8Q","macAddress":"34:E6:B6:BB:15:FE","status":"online","lastSeenAt":"2026-01-27T18:13:35.267Z","createdAt":"2026-01-27T18:13:35.267Z"}]

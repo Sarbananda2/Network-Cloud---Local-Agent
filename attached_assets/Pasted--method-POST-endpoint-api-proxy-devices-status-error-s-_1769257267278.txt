@@ -1,0 +1,395 @@
+[
+  {
+    "method": "POST",
+    "endpoint": "/api/proxy/devices",
+    "status": "error",
+    "statusCode": 400,
+    "message": "Validation error",
+    "timestamp": "2026-01-24T12:18:57.523Z",
+    "responseBody": {
+      "success": false,
+      "statusCode": 400,
+      "error": "Validation error",
+      "errorType": "client_error",
+      "duration": 260
+    }
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/proxy/devices",
+    "status": "pending",
+    "message": "Syncing 1 device(s) via server proxy...",
+    "timestamp": "2026-01-24T12:18:56.896Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/proxy/heartbeat",
+    "status": "success",
+    "statusCode": 200,
+    "message": "Heartbeat sent successfully. Status: ok",
+    "timestamp": "2026-01-24T12:18:41.914Z",
+    "duration": 377,
+    "responseBody": {
+      "success": true,
+      "statusCode": 200,
+      "duration": 377,
+      "data": {
+        "status": "ok",
+        "serverTime": "2026-01-24T12:18:40.736Z"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/proxy/heartbeat",
+    "status": "pending",
+    "message": "Sending heartbeat via server proxy...",
+    "timestamp": "2026-01-24T12:18:41.221Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/proxy/heartbeat",
+    "status": "success",
+    "statusCode": 200,
+    "message": "Heartbeat sent successfully. Status: ok",
+    "timestamp": "2026-01-24T12:18:30.093Z",
+    "duration": 376,
+    "responseBody": {
+      "success": true,
+      "statusCode": 200,
+      "duration": 376,
+      "data": {
+        "status": "ok",
+        "serverTime": "2026-01-24T12:18:28.918Z"
+      }
+    }
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/proxy/heartbeat",
+    "status": "pending",
+    "message": "Sending heartbeat via server proxy...",
+    "timestamp": "2026-01-24T12:18:29.266Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "success",
+    "message": "Device authorized! Token received.",
+    "timestamp": "2026-01-24T12:17:56.062Z",
+    "responseBody": {
+      "agent_uuid": "eab8c416-4ba6-4cda-8885-17a49147def8",
+      "token_type": "Bearer"
+    }
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "pending",
+    "message": "Waiting for user approval...",
+    "timestamp": "2026-01-24T12:17:50.444Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "pending",
+    "message": "Waiting for user approval...",
+    "timestamp": "2026-01-24T12:17:45.428Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "pending",
+    "message": "Waiting for user approval...",
+    "timestamp": "2026-01-24T12:17:40.884Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "pending",
+    "message": "Waiting for user approval...",
+    "timestamp": "2026-01-24T12:17:35.438Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "pending",
+    "message": "Waiting for user approval...",
+    "timestamp": "2026-01-24T12:17:30.984Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "pending",
+    "message": "Waiting for user approval...",
+    "timestamp": "2026-01-24T12:17:25.428Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/authorize",
+    "status": "success",
+    "statusCode": 200,
+    "message": "Device code received. User code: GSND-J8GY",
+    "timestamp": "2026-01-24T12:17:25.036Z",
+    "duration": 291,
+    "responseBody": {
+      "device_code": "TTyDTobYDblfgWGl8Ph9rtJK05rv-u2BrPbFT40jJ5s",
+      "user_code": "GSND-J8GY",
+      "verification_uri": "https://network-cloud.replit.app/link",
+      "expires_in": 900,
+      "interval": 5
+    }
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/authorize",
+    "status": "pending",
+    "message": "Requesting device code...",
+    "timestamp": "2026-01-24T12:17:23.961Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.140Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.139Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.121Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.121Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.121Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.107Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.107Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.103Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.090Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.081Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.081Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.081Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.078Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.069Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.065Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.057Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.052Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.043Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.039Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:17.029Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.934Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.915Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.901Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.897Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.884Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.875Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.862Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.846Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.837Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.817Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.803Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.803Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.803Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.797Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "error",
+    "message": "Server error: 400",
+    "timestamp": "2026-01-24T12:13:16.787Z"
+  }
+]

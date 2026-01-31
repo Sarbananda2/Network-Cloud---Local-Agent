@@ -1,0 +1,156 @@
+2026-01-22 18:05:29.80
+0c8e6ec2
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-22 18:05:30.02
+0c8e6ec2
+User
+12:35:29 PM [express] serving on port 5000
+2026-01-22 18:21:11.76
+0c8e6ec2
+System
+system: received signal terminated
+2026-01-22 18:21:11.77
+0c8e6ec2
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-22 18:21:11.81
+0c8e6ec2
+System
+main done, exiting
+2026-01-22 18:35:54.87
+0c8e6ec2
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-22 18:35:55.42
+0c8e6ec2
+User
+1:05:55 PM [express] serving on port 5000
+2026-01-22 19:08:14.09
+0c8e6ec2
+System
+system: received signal terminated
+2026-01-22 19:08:14.09
+0c8e6ec2
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-22 19:08:14.12
+0c8e6ec2
+System
+main done, exiting
+2026-01-22 19:13:53.91
+0c8e6ec2
+System
+starting up user application
+2026-01-22 19:13:53.91
+0c8e6ec2
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-22 19:13:53.91
+0c8e6ec2
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-22 19:13:54.13
+0c8e6ec2
+User
+1:43:54 PM [express] serving on port 5000
+2026-01-22 19:29:01.80
+0c8e6ec2
+System
+system: received signal terminated
+2026-01-22 19:29:01.80
+0c8e6ec2
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-22 19:29:01.86
+0c8e6ec2
+System
+main done, exiting
+2026-01-24 15:49:49.15
+0c8e6ec2
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-24 15:49:49.15
+0c8e6ec2
+System
+starting up user application
+2026-01-24 15:49:49.15
+0c8e6ec2
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-24 15:49:49.83
+0c8e6ec2
+User
+10:19:49 AM [express] serving on port 5000
+2026-01-24 15:51:10.55
+ba018980
+System
+starting up user application
+2026-01-24 15:51:10.55
+ba018980
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-24 15:51:10.56
+ba018980
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-24 15:51:11.23
+ba018980
+User
+10:21:11 AM [express] serving on port 5000
+2026-01-24 15:51:45.26
+ba018980
+User
+10:21:45 AM [express] POST /api/proxy/test-connection 200 in 6549ms :: {"success":true,"statusCode":200,"statusText":"OK","duration":6544,"responseBody":{"status":"device_mismatch","serverTime":"2026-01-24T10:21:45.235Z","message":"A different device is attempting to use this token. Please check your dashboard."},"errorType":null,"headers":{"access-control-allow-origin":"*","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","cache-control":"private","content-length":"161","content-type":"application/json; charset=utf-8","date":"Sat, 24 Jan 2026 10:21:45 GMT","etag":"W/\"a1-m9sy09yK7q1MQoNgfVNipN+D2jM\"","expires":"Sat, 24 Jan 2026 10:21:45 GMT","server":"Google Frontend","set-cookie":"GAESA=CpwBMDA1ZWI2OTc0Y2Y2MTlkZTNjY2Q5Yzc0MzBkZTcwNWQyOGQ0N2QzNGZjNzNhNTQ2ZTk1MzAzZmI0ZDg2ZjAxM2VmOWVhODU3ZmQxMDhmMzBmMmJkMTJiZmUzNTgxZDZkNGZhYTZlNDRlYThlNzRlNmFiMmY3Mzc3ZjJlOTg4NGQ5ODRjZDBlZWQzNTFkYWMwOWIxZDNiZGYzYjUxEKLPmPy-Mw; expires=Mon, 23-Feb-2026 10:21:45 GMT; path=/","strict-transport-security":"max-age=63072000; includeSubDomains","via":"1.1 google","x-cloud-trace-context":"57bef467cc82d7211b26e7a8519bed89;o=1","x-powered-by":"Express"}}
+2026-01-24 15:55:01.36
+0c8e6ec2
+System
+system: received signal terminated
+2026-01-24 15:55:01.37
+0c8e6ec2
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-24 15:55:01.42
+0c8e6ec2
+System
+main done, exiting
+2026-01-24 15:58:27.58
+ba018980
+User
+10:28:27 AM [express] POST /api/proxy/test-connection 200 in 617ms :: {"success":true,"statusCode":200,"statusText":"OK","duration":616,"responseBody":{"status":"pending_approval","serverTime":"2026-01-24T10:28:27.572Z","message":"Waiting for approval from dashboard user."},"errorType":null,"headers":{"access-control-allow-origin":"*","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000","cache-control":"private","content-length":"123","content-type":"application/json; charset=utf-8","date":"Sat, 24 Jan 2026 10:28:27 GMT","etag":"W/\"7b-ePX/aywVGO+fJLTKJdrCXCt7OqE\"","expires":"Sat, 24 Jan 2026 10:28:27 GMT","server":"Google Frontend","set-cookie":"GAESA=CpwBMDA1ZWI2OTc0Y2Y2MTlkZTNjY2Q5Yzc0MzBkZTcwNWQyOGQ0N2QzNGZjNzNhNTQ2ZTk1MzAzZmI0ZDg2ZjAxM2VmOWVhODU3ZmQxMDhmMzBmMmJkMTJiZmUzNTgxZDZkNGZhYTZlNDRlYThlNzRlNmFiMmY3Mzc3ZjJlOTg4NGQ5ODRjZDBlZWQzNTFkYWMwOWIxZDNiZGYzYjUxELeWsfy-Mw; expires=Mon, 23-Feb-2026 10:28:27 GMT; path=/","strict-transport-security":"max-age=63072000; includeSubDomains","via":"1.1 google","x-cloud-trace-context":"f4fe681297bcc0b5137559c623c6d66a;o=1","x-powered-by":"Express"}}
+2026-01-24 16:02:52.43
+ba018980
+User
+10:32:52 AM [express] POST /api/proxy/heartbeat 200 in 334ms :: {"success":true,"statusCode":200,"duration":333,"data":{"status":"device_mismatch","serverTime":"2026-01-24T10:32:52.427Z","message":"A different device is attempting to use this token. Please check your dashboard."}}
+2026-01-24 16:28:41.18
+ba018980
+System
+system: received signal terminated
+2026-01-24 16:28:41.18
+ba018980
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-24 16:28:41.19
+ba018980
+System
+main done, exiting
+2026-01-24 16:40:52.13
+ba018980
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-24 16:40:52.13
+ba018980
+System
+starting up user application
+2026-01-24 16:40:52.13
+ba018980
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-24 16:40:52.85
+ba018980
+User
+11:10:52 AM [express] serving on port 5000
+2026-01-24 17:01:31.18
+ba018980
+System
+system: received signal terminated

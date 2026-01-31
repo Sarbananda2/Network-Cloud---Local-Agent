@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { devices, deviceNetworkStates, agentTokens } from './schema';
+import { devices, deviceNetworkStates, agentTokens, networkAdapterSchema, networkAdaptersArraySchema } from './schema';
 
 // ============================================
 // SHARED ERROR SCHEMAS
@@ -59,6 +59,15 @@ export const api = {
         401: errorSchemas.unauthorized,
       },
     },
+    delete: {
+      method: 'DELETE' as const,
+      path: '/api/devices/:id',
+      responses: {
+        200: z.object({ message: z.string() }),
+        404: errorSchemas.notFound,
+        401: errorSchemas.unauthorized,
+      },
+    },
   },
   agentTokens: {
     list: {
@@ -72,6 +81,18 @@ export const api = {
           lastUsedAt: z.date().nullable(),
           createdAt: z.date().nullable(),
           revokedAt: z.date().nullable(),
+          approved: z.boolean().nullable(),
+          agentUuid: z.string().nullable(),
+          agentMacAddress: z.string().nullable(),
+          agentHostname: z.string().nullable(),
+          agentIpAddress: z.string().nullable(),
+          firstConnectedAt: z.date().nullable(),
+          lastHeartbeatAt: z.date().nullable(),
+          pendingAgentUuid: z.string().nullable(),
+          pendingAgentMacAddress: z.string().nullable(),
+          pendingAgentHostname: z.string().nullable(),
+          pendingAgentIpAddress: z.string().nullable(),
+          pendingAgentAt: z.date().nullable(),
         })),
         401: errorSchemas.unauthorized,
       },
@@ -120,6 +141,24 @@ export const api = {
         401: errorSchemas.unauthorized,
       },
     },
+    approveReplacement: {
+      method: 'POST' as const,
+      path: '/api/agent-tokens/:id/approve-replacement',
+      responses: {
+        200: z.object({ message: z.string() }),
+        404: errorSchemas.notFound,
+        401: errorSchemas.unauthorized,
+      },
+    },
+    rejectPending: {
+      method: 'POST' as const,
+      path: '/api/agent-tokens/:id/reject-pending',
+      responses: {
+        200: z.object({ message: z.string() }),
+        404: errorSchemas.notFound,
+        401: errorSchemas.unauthorized,
+      },
+    },
   },
   agent: {
     registerDevice: {
@@ -130,6 +169,7 @@ export const api = {
         macAddress: z.string().regex(/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/).optional(),
         status: z.enum(['online', 'offline', 'away']).default('online'),
         ipAddress: z.string().ip().optional(),
+        adapters: networkAdaptersArraySchema.optional(), // Full network adapter data
       }),
       responses: {
         201: z.custom<typeof devices.$inferSelect>(),
@@ -143,6 +183,7 @@ export const api = {
         name: z.string().min(1).optional(),
         status: z.enum(['online', 'offline', 'away']).optional(),
         ipAddress: z.string().ip().optional(),
+        adapters: networkAdaptersArraySchema.optional(), // Full network adapter data
       }),
       responses: {
         200: z.custom<typeof devices.$inferSelect>(),
@@ -163,13 +204,14 @@ export const api = {
       method: 'POST' as const,
       path: '/api/agent/heartbeat',
       body: z.object({
+        agentUuid: z.string().uuid(),
         macAddress: z.string().regex(/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/),
         hostname: z.string().min(1),
         ipAddress: z.string().ip().optional(),
       }),
       responses: {
         200: z.object({
-          status: z.enum(['ok', 'pending_approval', 'device_mismatch']),
+          status: z.enum(['ok', 'pending_approval', 'pending_reauthorization']),
           serverTime: z.string(),
           message: z.string().optional(),
         }),
@@ -185,6 +227,7 @@ export const api = {
           macAddress: z.string().regex(/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/).optional(),
           status: z.enum(['online', 'offline', 'away']),
           ipAddress: z.string().ip().optional(),
+          adapters: networkAdaptersArraySchema.optional(), // Full network adapter data
         })),
       }),
       responses: {
@@ -213,6 +256,34 @@ export function buildUrl(path: string, params?: Record<string, string | number>)
   }
   return url;
 }
+
+// ============================================
+// DEVICE FLOW SCHEMAS (OAuth Device Authorization)
+// ============================================
+export const deviceFlowSchemas = {
+  authorize: {
+    body: z.object({
+      hostname: z.string().max(255).optional(),
+      macAddress: z.string().max(17).optional(),
+    }),
+  },
+  token: {
+    body: z.object({
+      device_code: z.string().min(1),
+    }),
+  },
+  verify: {
+    body: z.object({
+      user_code: z.string().min(1).max(16),
+    }),
+  },
+  approve: {
+    body: z.object({
+      user_code: z.string().min(1).max(16),
+      approved: z.boolean(),
+    }),
+  },
+};
 
 // ============================================
 // TYPE HELPERS

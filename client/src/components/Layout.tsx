@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { LogOut, User, Settings, Trash2, Key, LayoutDashboard, Cloud, Activity, Power, Network, FileText } from "lucide-react";
-const logoUrl = "/favicon.png";
+import logoUrl from "@/assets/logo.png";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -57,6 +57,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
   };
 
   return (
+<<<<<<< HEAD
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Top Navigation */}
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link href="/" className="flex items-center gap-2">
+              <img src={logoUrl} alt="NetworkCloud" className="h-8 w-8 object-contain" data-testid="img-logo-header" />
+            </Link>
+
+            <nav className="hidden md:flex items-center gap-6">
+              <Link href="/devices">
+                <span className={`text-sm font-medium transition-colors hover:text-primary cursor-pointer ${location.startsWith('/devices') ? 'text-primary' : 'text-muted-foreground'}`}>
+                  Dashboard
+                </span>
+              </Link>
+            </nav>
+=======
     <div className="min-h-screen bg-background text-foreground flex">
       <aside className="w-64 border-r border-border/40 bg-background/80 backdrop-blur px-5 py-6 flex flex-col gap-8">
         <Link href="/" className="flex items-center gap-3">
@@ -64,6 +82,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <div className="leading-tight">
             <div className="text-sm font-semibold">NetworkCloud</div>
             <div className="text-xs text-muted-foreground">Agent</div>
+>>>>>>> c8c595d29605fe452b21ae776b9ee9482ebe92d1
           </div>
         </Link>
 

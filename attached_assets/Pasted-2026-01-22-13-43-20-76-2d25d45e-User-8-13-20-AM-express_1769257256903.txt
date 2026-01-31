@@ -1,0 +1,156 @@
+2026-01-22 13:43:20.76
+2d25d45e
+User
+8:13:20 AM [express] serving on port 5000
+2026-01-22 14:01:18.61
+a3fe0cfd
+System
+starting up user application
+2026-01-22 14:01:18.61
+a3fe0cfd
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-22 14:01:18.61
+a3fe0cfd
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-22 14:01:19.22
+a3fe0cfd
+User
+8:31:19 AM [express] serving on port 5000
+2026-01-22 14:02:40.97
+2d25d45e
+System
+system: received signal terminated
+2026-01-22 14:02:40.98
+2d25d45e
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-22 14:02:41.04
+2d25d45e
+System
+main done, exiting
+2026-01-22 14:20:43.28
+a3fe0cfd
+System
+system: received signal terminated
+2026-01-22 14:20:43.28
+a3fe0cfd
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-22 14:20:43.33
+a3fe0cfd
+System
+main done, exiting
+2026-01-22 14:24:31.58
+a3fe0cfd
+System
+starting up user application
+2026-01-22 14:24:31.58
+a3fe0cfd
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-22 14:24:31.58
+a3fe0cfd
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-22 14:24:31.87
+a3fe0cfd
+User
+8:54:31 AM [express] serving on port 5000
+2026-01-22 14:39:33.28
+a3fe0cfd
+System
+system: received signal terminated
+2026-01-22 14:39:33.28
+a3fe0cfd
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-22 14:39:33.34
+a3fe0cfd
+System
+main done, exiting
+2026-01-22 14:53:02.30
+a3fe0cfd
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-22 14:53:02.30
+a3fe0cfd
+System
+starting up user application
+2026-01-22 14:53:02.30
+a3fe0cfd
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-22 14:53:02.56
+a3fe0cfd
+User
+9:23:02 AM [express] serving on port 5000
+2026-01-22 15:15:33.29
+a3fe0cfd
+System
+system: received signal terminated
+2026-01-22 15:15:33.29
+a3fe0cfd
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-22 15:15:33.33
+a3fe0cfd
+System
+main done, exiting
+2026-01-22 15:28:29.21
+a3fe0cfd
+System
+starting up user application
+2026-01-22 15:28:29.21
+a3fe0cfd
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-22 15:28:29.21
+a3fe0cfd
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-22 15:28:29.77
+a3fe0cfd
+User
+9:58:29 AM [express] serving on port 5000
+2026-01-22 15:45:33.29
+a3fe0cfd
+System
+system: received signal terminated
+2026-01-22 15:45:33.30
+a3fe0cfd
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-22 15:45:33.39
+a3fe0cfd
+System
+main done, exiting
+2026-01-22 16:03:14.17
+0c8e6ec2
+System
+starting up user application
+2026-01-22 16:03:14.17
+0c8e6ec2
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-22 16:03:14.17
+0c8e6ec2
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-22 16:03:14.74
+0c8e6ec2
+User
+10:33:14 AM [express] serving on port 5000
+2026-01-22 16:27:49.67
+0c8e6ec2
+System
+system: received signal terminated
+2026-01-22 16:27:49.67
+0c8e6ec2
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-22 16:27:49.69
+0c8e6ec2
+System
+main done, exiting

@@ -1,0 +1,156 @@
+2026-01-24 15:52:15.30
+53689a90
+User
+10:22:15 AM [express] GET /api/agent-tokens 200 in 91ms :: [{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":null,"approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:52:20.71
+53689a90
+User
+10:22:20 AM [express] GET /api/agent-tokens 304 in 89ms :: [{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":null,"approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:52:26.12
+53689a90
+User
+10:22:26 AM [express] GET /api/agent-tokens 304 in 90ms :: [{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":null,"approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:52:30.23
+53689a90
+User
+10:22:30 AM [express] GET /api/auth/user 304 in 95ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-22T11:47:18.160Z"}
+2026-01-24 15:52:30.65
+53689a90
+User
+10:22:30 AM [express] GET /api/agent-tokens 304 in 87ms :: [{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":null,"approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:53:44.62
+53689a90
+User
+10:23:44 AM [express] GET /api/agent-tokens 304 in 463ms :: [{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":null,"approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:55:20.95
+53689a90
+User
+10:25:20 AM [express] GET /api/agent-tokens 304 in 4968ms :: [{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":null,"approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:55:21.84
+53689a90
+User
+10:25:21 AM [express] DELETE /api/agent-tokens/1 200 in 95ms :: {"message":"Token revoked successfully"}
+2026-01-24 15:55:22.27
+53689a90
+User
+10:25:22 AM [express] GET /api/agent-tokens 200 in 91ms :: [{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:55:27.68
+53689a90
+User
+10:25:27 AM [express] GET /api/agent-tokens 304 in 99ms :: [{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:57:43.00
+53689a90
+User
+10:27:43 AM [express] GET /api/agent-tokens 304 in 4937ms :: [{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:57:43.10
+53689a90
+User
+10:27:43 AM [express] POST /api/agent-tokens 201 in 2490ms :: {"id":2,"name":"My Second Token","tokenPrefix":"0065078b","token":"0065078bcfc59ddf7cb637c5f0eee7da197c597dd1989e698f5ecc2b19452004","createdAt":"2026-01-24T10:27:43.027Z"}
+2026-01-24 15:57:43.50
+53689a90
+User
+10:27:43 AM [express] GET /api/agent-tokens 200 in 90ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":null,"createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":false,"agentMacAddress":null,"agentHostname":null,"agentIpAddress":null,"firstConnectedAt":null,"lastHeartbeatAt":null},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:57:48.90
+53689a90
+User
+10:27:48 AM [express] GET /api/agent-tokens 304 in 93ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":null,"createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":false,"agentMacAddress":null,"agentHostname":null,"agentIpAddress":null,"firstConnectedAt":null,"lastHeartbeatAt":null},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:57:54.31
+53689a90
+User
+10:27:54 AM [express] GET /api/agent-tokens 304 in 92ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":null,"createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":false,"agentMacAddress":null,"agentHostname":null,"agentIpAddress":null,"firstConnectedAt":null,"lastHeartbeatAt":null},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:57:59.72
+53689a90
+User
+10:27:59 AM [express] GET /api/agent-tokens 304 in 89ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":null,"createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":false,"agentMacAddress":null,"agentHostname":null,"agentIpAddress":null,"firstConnectedAt":null,"lastHeartbeatAt":null},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:58:05.12
+53689a90
+User
+10:28:05 AM [express] GET /api/agent-tokens 304 in 89ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":null,"createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":false,"agentMacAddress":null,"agentHostname":null,"agentIpAddress":null,"firstConnectedAt":null,"lastHeartbeatAt":null},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:58:10.54
+53689a90
+User
+10:28:10 AM [express] GET /api/agent-tokens 304 in 93ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":null,"createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":false,"agentMacAddress":null,"agentHostname":null,"agentIpAddress":null,"firstConnectedAt":null,"lastHeartbeatAt":null},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:58:27.57
+53689a90
+User
+10:28:27 AM [express] POST /api/agent/heartbeat 200 in 527ms :: {"status":"pending_approval","serverTime":"2026-01-24T10:28:27.572Z","message":"Waiting for approval from dashboard user."}
+2026-01-24 15:58:36.19
+53689a90
+User
+10:28:36 AM [express] GET /api/agent-tokens 200 in 282ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":"2026-01-24T10:28:27.542Z","createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":false,"agentMacAddress":"00:00:00:00:00:00","agentHostname":"diagnostic-test","agentIpAddress":"0.0.0.0","firstConnectedAt":"2026-01-24T10:28:27.481Z","lastHeartbeatAt":"2026-01-24T10:28:27.481Z"},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:58:39.33
+53689a90
+User
+10:28:39 AM [express] POST /api/agent-tokens/2/approve 200 in 92ms :: {"message":"Agent approved successfully"}
+2026-01-24 15:58:39.74
+53689a90
+User
+10:28:39 AM [express] GET /api/agent-tokens 200 in 91ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":"2026-01-24T10:28:27.542Z","createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":true,"agentMacAddress":"00:00:00:00:00:00","agentHostname":"diagnostic-test","agentIpAddress":"0.0.0.0","firstConnectedAt":"2026-01-24T10:28:27.481Z","lastHeartbeatAt":"2026-01-24T10:28:27.481Z"},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:58:45.15
+53689a90
+User
+10:28:45 AM [express] GET /api/agent-tokens 304 in 91ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":"2026-01-24T10:28:27.542Z","createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":true,"agentMacAddress":"00:00:00:00:00:00","agentHostname":"diagnostic-test","agentIpAddress":"0.0.0.0","firstConnectedAt":"2026-01-24T10:28:27.481Z","lastHeartbeatAt":"2026-01-24T10:28:27.481Z"},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 15:58:46.24
+53689a90
+User
+10:28:46 AM [express] GET /api/auth/user 304 in 92ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-22T11:47:18.160Z"}
+2026-01-24 15:58:46.44
+53689a90
+User
+10:28:46 AM [express] GET /api/devices 304 in 283ms :: []
+2026-01-24 15:59:54.22
+53689a90
+User
+10:29:54 AM [express] GET /api/devices 304 in 89ms :: []
+2026-01-24 16:00:09.01
+53689a90
+User
+10:30:09 AM [express] GET /api/agent-tokens 304 in 452ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":"2026-01-24T10:28:27.542Z","createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":true,"agentMacAddress":"00:00:00:00:00:00","agentHostname":"diagnostic-test","agentIpAddress":"0.0.0.0","firstConnectedAt":"2026-01-24T10:28:27.481Z","lastHeartbeatAt":"2026-01-24T10:28:27.481Z"},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 16:00:14.42
+53689a90
+User
+10:30:14 AM [express] GET /api/agent-tokens 304 in 96ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":"2026-01-24T10:28:27.542Z","createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":true,"agentMacAddress":"00:00:00:00:00:00","agentHostname":"diagnostic-test","agentIpAddress":"0.0.0.0","firstConnectedAt":"2026-01-24T10:28:27.481Z","lastHeartbeatAt":"2026-01-24T10:28:27.481Z"},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 16:02:19.27
+53689a90
+User
+10:32:19 AM [express] GET /api/agent-tokens 304 in 4980ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":"2026-01-24T10:28:27.542Z","createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":true,"agentMacAddress":"00:00:00:00:00:00","agentHostname":"diagnostic-test","agentIpAddress":"0.0.0.0","firstConnectedAt":"2026-01-24T10:28:27.481Z","lastHeartbeatAt":"2026-01-24T10:28:27.481Z"},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 16:02:20.11
+53689a90
+User
+10:32:20 AM [express] GET /api/auth/user 304 in 94ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-22T11:47:18.160Z"}
+2026-01-24 16:02:47.49
+53689a90
+User
+10:32:47 AM [express] GET /api/auth/user 304 in 2283ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-22T11:47:18.160Z"}
+2026-01-24 16:02:47.91
+53689a90
+User
+10:32:47 AM [express] GET /api/devices 304 in 105ms :: []
+2026-01-24 16:02:52.42
+53689a90
+User
+10:32:52 AM [express] POST /api/agent/heartbeat 200 in 252ms :: {"status":"device_mismatch","serverTime":"2026-01-24T10:32:52.427Z","message":"A different device is attempting to use this token. Please check your dashboard."}
+2026-01-24 16:03:23.73
+53689a90
+User
+10:33:23 AM [express] GET /api/agent-tokens 200 in 446ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":"2026-01-24T10:32:52.206Z","createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":true,"agentMacAddress":"00:00:00:00:00:00","agentHostname":"diagnostic-test","agentIpAddress":"0.0.0.0","firstConnectedAt":"2026-01-24T10:28:27.481Z","lastHeartbeatAt":"2026-01-24T10:28:27.481Z"},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 16:03:25.56
+53689a90
+User
+10:33:25 AM [express] GET /api/auth/user 304 in 2279ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-22T11:47:18.160Z"}
+2026-01-24 16:03:29.13
+53689a90
+User
+10:33:29 AM [express] GET /api/agent-tokens 304 in 87ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":"2026-01-24T10:32:52.206Z","createdAt":"2026-01-24T10:27:43.027Z","revokedAt":null,"approved":true,"agentMacAddress":"00:00:00:00:00:00","agentHostname":"diagnostic-test","agentIpAddress":"0.0.0.0","firstConnectedAt":"2026-01-24T10:28:27.481Z","lastHeartbeatAt":"2026-01-24T10:28:27.481Z"},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 16:03:30.59
+53689a90
+User
+10:33:30 AM [express] DELETE /api/agent-tokens/2 200 in 91ms :: {"message":"Token revoked successfully"}
+2026-01-24 16:03:30.99
+53689a90
+User
+10:33:30 AM [express] GET /api/agent-tokens 200 in 88ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":"2026-01-24T10:32:52.206Z","createdAt":"2026-01-24T10:27:43.027Z","revokedAt":"2026-01-24T10:33:30.536Z","approved":true,"agentMacAddress":"00:00:00:00:00:00","agentHostname":"diagnostic-test","agentIpAddress":"0.0.0.0","firstConnectedAt":"2026-01-24T10:28:27.481Z","lastHeartbeatAt":"2026-01-24T10:28:27.481Z"},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]
+2026-01-24 16:09:35.32
+53689a90
+User
+10:39:35 AM [express] GET /api/agent-tokens 304 in 521ms :: [{"id":2,"name":"My Second Token","tokenPrefix":"0065078b","lastUsedAt":"2026-01-24T10:32:52.206Z","createdAt":"2026-01-24T10:27:43.027Z","revokedAt":"2026-01-24T10:33:30.536Z","approved":true,"agentMacAddress":"00:00:00:00:00:00","agentHostname":"diagnostic-test","agentIpAddress":"0.0.0.0","firstConnectedAt":"2026-01-24T10:28:27.481Z","lastHeartbeatAt":"2026-01-24T10:28:27.481Z"},{"id":1,"name":"My First Token","tokenPrefix":"4fd391d9","lastUsedAt":"2026-01-24T10:21:44.999Z","createdAt":"2026-01-22T11:47:32.876Z","revokedAt":"2026-01-24T10:25:21.777Z","approved":true,"agentMacAddress":"33:9C:63:29:FC:6A","agentHostname":"agent-simulator-01","agentIpAddress":"192.168.103.17","firstConnectedAt":"2026-01-22T11:56:10.480Z","lastHeartbeatAt":"2026-01-22T11:56:35.534Z"}]

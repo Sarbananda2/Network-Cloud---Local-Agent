@@ -10,6 +10,7 @@ import NotFound from "@/pages/not-found";
 
 const getPageTitle = (path: string): string => {
   if (path === "/login") return "Login | NetworkCloud";
+  if (path === "/link") return "Link Device | NetworkCloud";
   if (path === "/devices") return "Dashboard | NetworkCloud";
   if (path.startsWith("/devices/")) return "Device Details | NetworkCloud";
   if (path === "/agent-tokens") return "Agent Tokens | NetworkCloud";
@@ -18,6 +19,7 @@ const getPageTitle = (path: string): string => {
 };
 
 import LoginPage from "@/pages/Login";
+import DeviceLinkPage from "@/pages/DeviceLink";
 import DeviceList from "@/pages/DeviceList";
 import DeviceDetail from "@/pages/DeviceDetail";
 import AgentTokens from "@/pages/AgentTokens";
@@ -69,6 +71,10 @@ function Router() {
     <Switch>
       <Route path="/login">
         {isAuthenticated ? <Redirect to="/devices" /> : <LoginPage />}
+      </Route>
+
+      <Route path="/link">
+        <DeviceLinkPage />
       </Route>
       
       <Route path="/devices">

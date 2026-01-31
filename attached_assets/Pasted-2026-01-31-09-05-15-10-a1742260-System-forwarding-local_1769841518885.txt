@@ -1,0 +1,136 @@
+2026-01-31 09:05:15.10
+a1742260
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-31 09:05:16.53
+a1742260
+User
+3:35:16 AM [express] serving on port 5000
+2026-01-31 09:20:27.84
+a1742260
+System
+system: received signal terminated
+2026-01-31 09:20:27.85
+a1742260
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-31 09:20:27.87
+a1742260
+System
+main done, exiting
+2026-01-31 10:14:35.70
+a1742260
+System
+starting up user application
+2026-01-31 10:14:35.70
+a1742260
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-31 10:14:35.70
+a1742260
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-31 10:14:36.30
+a1742260
+User
+4:44:36 AM [express] serving on port 5000
+2026-01-31 10:14:39.86
+a1742260
+User
+4:44:39 AM [express] GET /api/auth/user 304 in 407ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-27T18:11:49.964Z"}
+2026-01-31 10:14:40.27
+a1742260
+User
+4:44:40 AM [express] GET /api/devices 304 in 97ms :: [{"id":7,"userId":"25269572","agentTokenId":16,"name":"MacBook-Air-YS8Q","macAddress":"34:E6:B6:BB:15:FE","status":"online","lastSeenAt":"2026-01-27T18:13:35.267Z","createdAt":"2026-01-27T18:13:35.267Z"}]
+2026-01-31 10:29:47.90
+a1742260
+System
+system: received signal terminated
+2026-01-31 10:29:47.91
+a1742260
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-31 10:29:47.95
+a1742260
+System
+main done, exiting
+2026-01-31 11:37:53.81
+a1742260
+System
+starting up user application
+2026-01-31 11:37:53.81
+a1742260
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-31 11:37:53.81
+a1742260
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-31 11:37:54.58
+a1742260
+User
+6:07:54 AM [express] serving on port 5000
+2026-01-31 11:52:55.54
+a1742260
+System
+system: received signal terminated
+2026-01-31 11:52:55.55
+a1742260
+System
+command finished with error [node ./dist/index.cjs]: signal: terminated
+2026-01-31 11:52:55.55
+a1742260
+System
+main done, exiting
+2026-01-31 11:53:36.94
+a1742260
+System
+metasidecar: loaded enterprise status from environment is_enterprise=false
+2026-01-31 11:53:36.94
+a1742260
+System
+starting up user application
+2026-01-31 11:53:36.94
+a1742260
+System
+forwarding local port 5000 to external port 80 (mapped as 1104)
+2026-01-31 11:53:37.68
+a1742260
+User
+6:23:37 AM [express] serving on port 5000
+2026-01-31 11:58:33.40
+a1742260
+User
+6:28:33 AM [express] POST /api/device/authorize 200 in 734ms :: {"device_code":"X8CG1VXg_H1Ok5U3OveszaRVFI6KB1_tuA9UydJ_VYk","user_code":"X7UU-T5HK","verification_uri":"https://network-cloud.replit.app/link","expires_in":900,"interval":5}
+2026-01-31 12:07:04.31
+a1742260
+User
+6:37:04 AM [express] POST /api/device/authorize 200 in 669ms :: {"device_code":"0w9SJczSMJ_BvgOlE86p73ln7VPQjnJGUa4DsY9JWSI","user_code":"HR3S-NAWH","verification_uri":"https://network-cloud.replit.app/link","expires_in":900,"interval":5}
+2026-01-31 12:07:18.34
+a1742260
+User
+6:37:18 AM [express] GET /api/auth/user 304 in 467ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-27T18:11:49.964Z"}
+2026-01-31 12:07:18.75
+a1742260
+User
+6:37:18 AM [express] GET /api/devices 304 in 96ms :: [{"id":7,"userId":"25269572","agentTokenId":16,"name":"MacBook-Air-YS8Q","macAddress":"34:E6:B6:BB:15:FE","status":"online","lastSeenAt":"2026-01-27T18:13:35.267Z","createdAt":"2026-01-27T18:13:35.267Z"}]
+2026-01-31 12:07:35.98
+a1742260
+User
+6:37:35 AM [express] POST /api/device/verify 200 in 496ms :: {"hostname":"DESKTOP-BE5O3LU","macAddress":"68:54:5A:5B:5F:86","createdAt":"2026-01-31T06:37:04.262Z"}
+2026-01-31 12:07:38.78
+a1742260
+User
+6:37:38 AM [express] POST /api/device/approve 200 in 125ms :: {"success":true,"message":"Device linked successfully"}
+2026-01-31 12:07:46.29
+a1742260
+User
+6:37:46 AM [express] GET /api/auth/user 304 in 91ms :: {"id":"25269572","email":"sarbanandataw2@gmail.com","firstName":"Sarbananda","lastName":"Taw","profileImageUrl":null,"createdAt":"2026-01-22T11:47:18.160Z","updatedAt":"2026-01-27T18:11:49.964Z"}
+2026-01-31 12:07:46.69
+a1742260
+User
+6:37:46 AM [express] GET /api/devices 304 in 89ms :: [{"id":7,"userId":"25269572","agentTokenId":16,"name":"MacBook-Air-YS8Q","macAddress":"34:E6:B6:BB:15:FE","status":"online","lastSeenAt":"2026-01-27T18:13:35.267Z","createdAt":"2026-01-27T18:13:35.267Z"}]
+2026-01-31 12:07:50.51
+a1742260
+User
+6:37:50 AM [express] POST /api/device/authorize 200 in 36ms :: {"device_code":"tj3mu88Sgk9FqM06wV6pQWtfef65lMVp7z9aia5meg8","user_code":"LE4D-PTBG","verification_uri":"https://network-cloud.replit.app/link","expires_in":900,"interval":5}

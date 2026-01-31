@@ -1,0 +1,127 @@
+[
+  {
+    "method": "PUT",
+    "endpoint": "/api/proxy/devices/sync",
+    "status": "error",
+    "statusCode": 400,
+    "message": "Validation error",
+    "plainMessage": "Failed to update network information in the cloud",
+    "timestamp": "2026-01-26T17:49:24.262Z",
+    "responseBody": {
+      "success": false,
+      "statusCode": 400,
+      "error": "Validation error",
+      "errorType": "client_error",
+      "duration": 65
+    }
+  },
+  {
+    "method": "PUT",
+    "endpoint": "/api/proxy/devices/sync",
+    "status": "pending",
+    "message": "Syncing device info (IP: 192.168.16.113) via server proxy...",
+    "plainMessage": "Sending network information to the cloud...",
+    "timestamp": "2026-01-26T17:49:23.879Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/proxy/register",
+    "status": "success",
+    "statusCode": 200,
+    "message": "Agent registered successfully",
+    "plainMessage": "Device registered with the cloud successfully",
+    "timestamp": "2026-01-26T17:49:23.879Z",
+    "duration": 29,
+    "responseBody": {
+      "success": true,
+      "statusCode": 200,
+      "duration": 29,
+      "data": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1\" />\n    <title>NetworkCloud</title>\n    <meta name=\"description\" content=\"View and monitor your network devices with NetworkCloud. Track device status, IP addresses, and availability in real-time.\" />\n    <link rel=\"icon\" type=\"image/png\" href=\"/favicon.png\" />\n    <link rel=\"apple-touch-icon\" href=\"/apple-touch-icon.png\" />\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n    <link href=\"https://fonts.googleapis.com/css2?family=Google+Sans+Flex:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap\" rel=\"stylesheet\">\n    <script type=\"module\" crossorigin src=\"/assets/index-KSu4MeAt.js\"></script>\n    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-EqpTG-pw.css\">\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>"
+    }
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/proxy/register",
+    "status": "pending",
+    "message": "Registering agent WKS-28UD...",
+    "plainMessage": "Registering this device with the cloud...",
+    "timestamp": "2026-01-26T17:49:23.537Z"
+  },
+  {
+    "method": "INFO",
+    "endpoint": "system",
+    "status": "success",
+    "message": "Device authorized. Auto-registering agent...",
+    "plainMessage": "Device is now linked! Starting up the agent...",
+    "timestamp": "2026-01-26T17:49:23.534Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "success",
+    "message": "Device authorized! Token received.",
+    "plainMessage": "Success! Device is now linked to your account",
+    "timestamp": "2026-01-26T17:49:22.132Z",
+    "responseBody": {
+      "agent_uuid": "b00d66cc-72c7-41a0-acd9-9d2b89a35111",
+      "token_type": "Bearer"
+    }
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "pending",
+    "message": "Waiting for user approval...",
+    "plainMessage": "Waiting for you to approve the link in your dashboard...",
+    "timestamp": "2026-01-26T17:49:16.914Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "pending",
+    "message": "Waiting for user approval...",
+    "plainMessage": "Waiting for you to approve the link in your dashboard...",
+    "timestamp": "2026-01-26T17:49:11.956Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "pending",
+    "message": "Waiting for user approval...",
+    "plainMessage": "Waiting for you to approve the link in your dashboard...",
+    "timestamp": "2026-01-26T17:49:06.915Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/token",
+    "status": "pending",
+    "message": "Waiting for user approval...",
+    "plainMessage": "Waiting for you to approve the link in your dashboard...",
+    "timestamp": "2026-01-26T17:49:01.866Z"
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/authorize",
+    "status": "success",
+    "statusCode": 200,
+    "message": "Device code received. User code: JPF7-9W5G",
+    "plainMessage": "Got a link code: JPF7-9W5G - enter this in your dashboard",
+    "timestamp": "2026-01-26T17:49:01.457Z",
+    "duration": 792,
+    "responseBody": {
+      "device_code": "zSQ4m0roYH7CPd_2ABHXYVB3TvyrkTsXOsyyRBm01Gs",
+      "user_code": "JPF7-9W5G",
+      "verification_uri": "https://network-cloud.replit.app/link",
+      "expires_in": 900,
+      "interval": 5
+    }
+  },
+  {
+    "method": "POST",
+    "endpoint": "/api/device/authorize",
+    "status": "pending",
+    "message": "Requesting device code...",
+    "plainMessage": "Starting device linking process...",
+    "timestamp": "2026-01-26T17:49:00.319Z"
+  }
+]

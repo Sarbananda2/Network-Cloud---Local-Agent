@@ -19,7 +19,7 @@ Preferred communication style: Simple, everyday language.
 - **Build Tool**: Vite with custom Replit plugins for development
 
 The frontend follows a component-based architecture with:
-- Pages in `client/src/pages/` (Login, DeviceList, DeviceDetail, AgentTokens)
+- Pages in `client/src/pages/` (Login, DeviceLink, DeviceList, DeviceDetail, AgentTokens)
 - Reusable UI components in `client/src/components/ui/` (shadcn/ui)
 - Custom hooks in `client/src/hooks/` for auth and data fetching
 - Protected routes that redirect unauthenticated users to login
@@ -29,8 +29,16 @@ The frontend follows a component-based architecture with:
 - **API Pattern**: RESTful JSON API under `/api/*` routes
 - **Authentication**: Replit Auth via OpenID Connect with Passport.js
 - **Session Management**: PostgreSQL-backed sessions via `connect-pg-simple`
+- **Real-time Updates**: WebSocket server for instant device notifications
 
 The backend is intentionally minimal—it only serves device data and handles authentication. All device state mutations happen externally (via a local agent not part of this codebase).
+
+### Real-time Updates (WebSocket)
+- **Path**: `/ws` (WebSocket upgrade endpoint)
+- **Authentication**: Session-based (validates `connect.sid` cookie against PostgreSQL session store)
+- **Events**: `devices_updated` - sent when any device is created, updated, or deleted
+- **Security**: Connections without valid session are rejected (close code 1008)
+- **Frontend Hook**: `useDeviceWebSocket()` in `client/src/hooks/use-websocket.ts` - auto-reconnects and invalidates React Query cache on updates
 
 ### Data Storage
 - **Database**: PostgreSQL with Drizzle ORM
@@ -41,6 +49,7 @@ The backend is intentionally minimal—it only serves device data and handles au
   - `devices` - Device registry with name, status, macAddress, timestamps
   - `device_network_states` - IP addresses and network state per device
   - `agent_tokens` - API tokens for local agents (SHA-256 hashed)
+  - `device_authorizations` - Pending device flow authorization requests
 
 ### API Contract
 Defined in `shared/routes.ts` using Zod schemas:
@@ -60,11 +69,17 @@ Defined in `shared/routes.ts` using Zod schemas:
 - `POST /api/agent-tokens/:id/reject` - Reject and reset a pending agent connection
 
 **Agent API (Bearer token auth):**
-- `POST /api/agent/heartbeat` - Agent registration and approval check (requires macAddress, hostname)
+- `POST /api/agent/heartbeat` - Agent registration and approval check (requires agentUuid, macAddress, hostname)
 - `POST /api/agent/devices` - Register or update device (by MAC)
 - `PATCH /api/agent/devices/:id` - Update device status/name
 - `DELETE /api/agent/devices/:id` - Delete a device
 - `PUT /api/agent/devices/sync` - Bulk sync devices (creates/updates/deletes)
+
+**Device Flow API (OAuth Device Authorization - RFC 8628):**
+- `POST /api/device/authorize` - Agent requests device code (no auth, returns user_code + device_code)
+- `POST /api/device/token` - Agent polls for token (no auth, returns token when approved)
+- `POST /api/device/verify` - Web UI validates user code (session auth)
+- `POST /api/device/approve` - Web UI approves/denies device (session auth)
 
 ### Key Constraints
 The web app must never:
@@ -105,3 +120,5 @@ The web app must never:
 
 - **Agent API Documentation**: See `docs/AGENT_API.md` for complete API reference, including authentication, endpoints, request/response formats, and Go code examples for building the local agent.
 - **Agent Build Guide**: See `docs/AGENT_BUILD_GUIDE.md` for step-by-step instructions on setting up the local development environment, using Cursor AI to build the Go agent, and deploying it as a Windows Service.
+- **Device Flow Documentation**: See `docs/DEVICE_FLOW.md` for the OAuth Device Authorization flow that enables agents to link to user accounts without manual token management.
+- **Workflow Documentation**: See `docs/WORKFLOW.md` for complete application workflow diagrams and state transitions.

@@ -49,6 +49,7 @@ Authorization: Bearer <token>
 Content-Type: application/json
 
 {
+  "agentUuid": "550e8400-e29b-41d4-a716-446655440000",
   "macAddress": "AA:BB:CC:DD:EE:FF",
   "hostname": "DESKTOP-HOME",
   "ipAddress": "192.168.1.50"
@@ -59,6 +60,7 @@ Content-Type: application/json
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
+| agentUuid | string | Yes | Unique identifier for the agent (UUID v4), generated on first install and persisted |
 | macAddress | string | Yes | MAC address of the machine running the agent, format `XX:XX:XX:XX:XX:XX` |
 | hostname | string | Yes | Hostname of the machine running the agent |
 | ipAddress | string | No | IP address of the machine running the agent |
@@ -81,19 +83,19 @@ Content-Type: application/json
 ```
 When the agent receives this status, it should continue sending heartbeats but NOT sync devices yet. The user must approve the agent in the web dashboard first.
 
-**Response (200 OK) - Device Mismatch:**
+**Response (200 OK) - Pending Reauthorization:**
 ```json
 {
-  "status": "device_mismatch",
+  "status": "pending_reauthorization",
   "serverTime": "2024-01-19T12:00:00.000Z",
-  "message": "A different device is attempting to use this token. Please check your dashboard."
+  "message": "A different agent is requesting to use this token. Waiting for user to approve replacement."
 }
 ```
-This occurs when a different MAC address is detected for an already-connected token. This could indicate:
-- Token was moved to a different computer (legitimate)
-- Token was leaked and used by someone else (security concern)
+This occurs when a different agent UUID is detected for an already-connected token. The new agent's info is stored as a "pending replacement" and the user must decide in the dashboard whether to:
+- **Approve Replacement**: Replace the current agent with the new one
+- **Keep Current**: Reject the pending agent and keep the current one
 
-The agent should log a warning and continue retrying. The user can either approve the new device or revoke the token.
+This workflow allows legitimate token transfers (e.g., moving agent to new machine) while alerting users to potential security concerns.
 
 **Status Values:**
 
@@ -101,10 +103,10 @@ The agent should log a warning and continue retrying. The user can either approv
 |--------|---------|--------------|
 | `ok` | Approved and connected | Proceed with device sync |
 | `pending_approval` | First connection, awaiting user approval | Keep heartbeating, don't sync |
-| `device_mismatch` | Different device using same token | Log warning, keep heartbeating |
+| `pending_reauthorization` | Different agent trying to use token, awaiting user decision | Keep heartbeating, don't sync |
 
 **Errors:**
-- `400 Bad Request` - Missing or invalid macAddress/hostname
+- `400 Bad Request` - Missing or invalid agentUuid/macAddress/hostname
 - `401 Unauthorized` - Invalid or revoked token
 
 ---
@@ -134,7 +136,8 @@ Content-Type: application/json
 | name | string | Yes | Device display name (min 1 character) |
 | macAddress | string | No | MAC address in format `XX:XX:XX:XX:XX:XX` |
 | status | string | No | One of: `online`, `offline`, `away`. Default: `online` |
-| ipAddress | string | No | Valid IPv4 or IPv6 address |
+| ipAddress | string | No | Valid IPv4 or IPv6 address (primary IP) |
+| adapters | array | No | Full network adapter data (see [Network Adapters Schema](#network-adapters-schema)) |
 
 **Response (201 Created):** New device
 ```json
@@ -275,7 +278,8 @@ Content-Type: application/json
 | name | string | Yes | Device display name |
 | macAddress | string | No | MAC address for matching |
 | status | string | Yes | One of: `online`, `offline`, `away` |
-| ipAddress | string | No | Device IP address |
+| ipAddress | string | No | Device IP address (primary IP) |
+| adapters | array | No | Full network adapter data (see [Network Adapters Schema](#network-adapters-schema)) |
 
 **Response (200 OK):**
 ```json
@@ -314,6 +318,112 @@ Must be one of:
 - `online` - Device is currently reachable
 - `offline` - Device is not reachable
 - `away` - Device was recently active but currently unreachable
+
+---
+
+## Network Adapters Schema
+
+The `adapters` field allows the agent to send detailed network adapter information similar to what `ipconfig /all` provides on Windows.
+
+### Adapter Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| name | string | Yes | Adapter name (e.g., "Ethernet", "Wi-Fi", "Hyper-V Virtual Ethernet Adapter") |
+| type | string | Yes | Adapter type: `ethernet`, `wifi`, `virtual`, `vpn`, `loopback`, or `other` |
+| macAddress | string | No | Physical/MAC address |
+| ipv4 | string | No | IPv4 address |
+| ipv6 | string | No | IPv6 address |
+| gateway | string | No | Default gateway address |
+| subnetMask | string | No | Subnet mask (e.g., "255.255.255.0") |
+| dns | array | No | Array of DNS server addresses |
+| dhcpEnabled | boolean | No | Whether DHCP is enabled |
+| dhcpServer | string | No | DHCP server address |
+| connected | boolean | No | Whether the adapter has media connected (default: true) |
+
+### Example Request with Adapters
+
+```json
+{
+  "name": "Home Desktop",
+  "macAddress": "AA:BB:CC:DD:EE:FF",
+  "status": "online",
+  "ipAddress": "192.168.1.100",
+  "adapters": [
+    {
+      "name": "Ethernet",
+      "type": "ethernet",
+      "macAddress": "AA:BB:CC:DD:EE:FF",
+      "ipv4": "192.168.1.100",
+      "ipv6": "fe80::1234:5678:abcd:ef00",
+      "gateway": "192.168.1.1",
+      "subnetMask": "255.255.255.0",
+      "dns": ["8.8.8.8", "8.8.4.4"],
+      "dhcpEnabled": true,
+      "dhcpServer": "192.168.1.1",
+      "connected": true
+    },
+    {
+      "name": "Wi-Fi",
+      "type": "wifi",
+      "macAddress": "11:22:33:44:55:66",
+      "connected": false
+    },
+    {
+      "name": "Hyper-V Virtual Ethernet Adapter",
+      "type": "virtual",
+      "ipv4": "172.17.0.1",
+      "subnetMask": "255.255.0.0",
+      "connected": true
+    }
+  ]
+}
+```
+
+### Adapter Type Mapping
+
+When parsing `ipconfig /all` output, map adapter descriptions to types:
+
+| Windows Adapter Description Contains | Type |
+|--------------------------------------|------|
+| "Ethernet", "Realtek", "Intel(R) Ethernet" | `ethernet` |
+| "Wi-Fi", "Wireless", "802.11" | `wifi` |
+| "Hyper-V", "VirtualBox", "VMware", "Docker" | `virtual` |
+| "VPN", "TAP", "TUN", "WireGuard" | `vpn` |
+| "Loopback" | `loopback` |
+| Other | `other` |
+
+### Go Code Example
+
+```go
+type NetworkAdapter struct {
+    Name        string   `json:"name"`
+    Type        string   `json:"type"`
+    MacAddress  string   `json:"macAddress,omitempty"`
+    IPv4        string   `json:"ipv4,omitempty"`
+    IPv6        string   `json:"ipv6,omitempty"`
+    Gateway     string   `json:"gateway,omitempty"`
+    SubnetMask  string   `json:"subnetMask,omitempty"`
+    DNS         []string `json:"dns,omitempty"`
+    DHCPEnabled *bool    `json:"dhcpEnabled,omitempty"`
+    DHCPServer  string   `json:"dhcpServer,omitempty"`
+    Connected   bool     `json:"connected"`
+}
+
+// GetNetworkAdapters returns all network adapters from ipconfig /all
+func GetNetworkAdapters() ([]NetworkAdapter, error) {
+    cmd := exec.Command("ipconfig", "/all")
+    output, err := cmd.Output()
+    if err != nil {
+        return nil, err
+    }
+    
+    // Parse output and create NetworkAdapter objects
+    // ... parsing logic here ...
+    
+    return adapters, nil
+}
+```
 
 ---
 
@@ -426,26 +536,57 @@ func syncDevices(baseURL, token string, devices []Device) (*SyncResponse, error)
     return &result, nil
 }
 
-func heartbeat(baseURL, token string) error {
-    req, err := http.NewRequest("POST", baseURL+"/api/agent/heartbeat", nil)
+type HeartbeatRequest struct {
+    AgentUUID  string `json:"agentUuid"`
+    MACAddress string `json:"macAddress"`
+    Hostname   string `json:"hostname"`
+    IPAddress  string `json:"ipAddress,omitempty"`
+}
+
+type HeartbeatResponse struct {
+    Status     string `json:"status"`
+    ServerTime string `json:"serverTime"`
+    Message    string `json:"message,omitempty"`
+}
+
+func heartbeat(baseURL, token string, agentUUID, macAddress, hostname, ipAddress string) (*HeartbeatResponse, error) {
+    body := HeartbeatRequest{
+        AgentUUID:  agentUUID,
+        MACAddress: macAddress,
+        Hostname:   hostname,
+        IPAddress:  ipAddress,
+    }
+    
+    jsonBody, err := json.Marshal(body)
     if err != nil {
-        return err
+        return nil, err
+    }
+    
+    req, err := http.NewRequest("POST", baseURL+"/api/agent/heartbeat", bytes.NewBuffer(jsonBody))
+    if err != nil {
+        return nil, err
     }
 
     req.Header.Set("Authorization", "Bearer "+token)
+    req.Header.Set("Content-Type", "application/json")
 
     client := &http.Client{Timeout: 10 * time.Second}
     resp, err := client.Do(req)
     if err != nil {
-        return err
+        return nil, err
     }
     defer resp.Body.Close()
 
     if resp.StatusCode != http.StatusOK {
-        return fmt.Errorf("heartbeat failed with status: %d", resp.StatusCode)
+        return nil, fmt.Errorf("heartbeat failed with status: %d", resp.StatusCode)
     }
 
-    return nil
+    var result HeartbeatResponse
+    if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+        return nil, err
+    }
+
+    return &result, nil
 }
 ```
 
@@ -461,6 +602,18 @@ Currently no rate limits are enforced, but please be reasonable:
 ---
 
 ## Changelog
+
+**v1.2.0** (January 2026)
+- Added pending replacement workflow for agent identity conflicts
+- New `pending_reauthorization` status in heartbeat response
+- Dashboard UI shows side-by-side comparison of current vs pending agent
+- User can approve replacement or keep current agent
+- New endpoints: `/api/agent-tokens/:id/approve-replacement` and `/api/agent-tokens/:id/reject-pending`
+
+**v1.1.0** (January 2026)
+- Added UUID-based agent identity (agentUuid field in heartbeat)
+- Agent mismatch detection now uses UUID instead of MAC address
+- Improved security with stable agent identification
 
 **v1.0.0** (January 2024)
 - Initial release
