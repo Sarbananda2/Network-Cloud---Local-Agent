@@ -6,9 +6,21 @@ import { users } from "./models/auth";
 
 // === NETWORK ADAPTER SCHEMA ===
 // Represents a single network adapter from ipconfig /all
+// Valid adapter types (lowercase)
+const adapterTypes = ["ethernet", "wifi", "virtual", "vpn", "loopback", "other"] as const;
+type AdapterType = typeof adapterTypes[number];
+
+// Normalize adapter type: lowercase and map unknown to "other"
+const normalizeAdapterType = (val: unknown): AdapterType => {
+  if (typeof val !== "string") return "other";
+  const lower = val.toLowerCase();
+  return adapterTypes.includes(lower as AdapterType) ? (lower as AdapterType) : "other";
+};
+
 export const networkAdapterSchema = z.object({
   name: z.string(), // e.g., "Ethernet", "Wi-Fi", "Hyper-V Virtual Ethernet Adapter"
-  type: z.enum(["ethernet", "wifi", "virtual", "vpn", "loopback", "other"]),
+  // Accept any case and normalize to lowercase; unknown values become "other"
+  type: z.preprocess(normalizeAdapterType, z.enum(adapterTypes)),
   macAddress: z.string().nullable().optional(), // Physical address
   ipv4: z.string().nullable().optional(), // IPv4 address
   ipv6: z.string().nullable().optional(), // IPv6 address
