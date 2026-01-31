@@ -11,6 +11,8 @@ import {
   StopService,
   TailLogs,
   GetNetwork,
+  GetConfig,
+  CancelLink,
 } from '../wailsjs/go/main/App';
 
 document.querySelector('#app').innerHTML = `
@@ -41,7 +43,7 @@ document.querySelector('#app').innerHTML = `
           <span class="nav-icon">
             ${iconSvg('cloud')}
           </span>
-          Cloud Link
+          Cloud Sync
         </button>
         <button class="nav-item" data-target="status">
           <span class="nav-icon">
@@ -218,22 +220,85 @@ document.querySelector('#app').innerHTML = `
       <section class="section" data-section="link">
         <div class="section-header">
           <div>
-            <h2>Cloud Link</h2>
+            <h2>Cloud Sync</h2>
             <p class="section-subtitle">Connect this agent to your cloud dashboard.</p>
           </div>
         </div>
-        <div class="cta-card">
-          <div class="cta-header">
+        <div id="cloudSyncCard" class="cloud-sync-card">
+          <div class="cloud-sync-header">
             <div>
-              <div class="cta-title">Connected to Cloud</div>
-              <div id="linkStatus" class="status-chip">Not linked</div>
+              <div class="cloud-sync-title" id="cloudSyncTitle">Enable Cloud Sync</div>
+              <div class="cloud-sync-subtitle" id="cloudSyncSubtitle">
+                Connect this agent to keep your devices in sync.
+              </div>
             </div>
-            <button id="startLink" class="primary">Start Link</button>
+            <div id="linkStatus" class="sync-badge warning">Not Synced</div>
+          </div>
+          <div id="cloudSyncDetails" class="cloud-sync-details">
+            <div class="sync-detail">
+              <div class="sync-label">Device ID</div>
+              <div id="cloudSyncDeviceId" class="sync-value">-</div>
+            </div>
+            <div class="sync-detail">
+              <div class="sync-label">Last Connected</div>
+              <div id="cloudSyncLastConnected" class="sync-value">-</div>
+            </div>
+            <div class="sync-detail">
+              <div class="sync-label">Sync Interval</div>
+              <div id="cloudSyncInterval" class="sync-value">-</div>
+            </div>
+          </div>
+          <div id="cloudSyncStats" class="cloud-sync-stats">
+            <div class="sync-stat">
+              <div class="sync-label">Synced Adapters</div>
+              <div id="cloudSyncAdapterCount" class="sync-value">-</div>
+            </div>
           </div>
           <div id="linkInfo" class="muted">Not linked</div>
-          <div class="cta-actions">
-            <button id="checkLink">Check Link</button>
-            <button id="unlink" class="ghost">Unlink</button>
+          <div class="cloud-sync-actions">
+            <button id="startLink" class="primary">Enable Sync</button>
+            <button id="checkLink" class="ghost">Check Connection</button>
+            <button id="cancelLink" class="ghost">Stop Linking</button>
+            <button id="unlink" class="destructive">Disable Sync</button>
+          </div>
+        </div>
+        <div class="cloud-sync-extras">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Sync Settings</div>
+                <div class="card-subtitle">Auto-sync configuration details.</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="sync-setting-row">
+                <span class="sync-setting-label">Sync Interval</span>
+                <span id="syncSettingsInterval" class="sync-setting-value">-</span>
+              </div>
+              <div class="sync-setting-row">
+                <span class="sync-setting-label">Data Synced</span>
+                <span class="sync-setting-value">Network Adapters, Status, Logs</span>
+              </div>
+              <div class="sync-setting-row">
+                <span class="sync-setting-label">Auto Sync</span>
+                <span class="sync-setting-value status-pill linked">Enabled</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Connection Benefits</div>
+                <div class="card-subtitle">Why cloud sync stays enabled.</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <ul class="benefits-list">
+                <li>Centralized monitoring across devices</li>
+                <li>Real-time sync of network changes</li>
+                <li>Historical logs and adapter backup</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
@@ -247,6 +312,12 @@ document.querySelector('#app').innerHTML = `
           <button id="refresh">Refresh</button>
         </div>
         <div id="status" class="muted">Status: loading...</div>
+        <div class="status-grid">
+          <div class="status-card">
+            <div class="status-label">Sync Status</div>
+            <div id="syncStatusValue" class="status-value">-</div>
+          </div>
+        </div>
       </section>
 
       <section class="section" data-section="service">
@@ -274,6 +345,42 @@ document.querySelector('#app').innerHTML = `
       </section>
     </main>
     <div id="adapterModal" class="adapter-modal"></div>
+    <div id="linkModal" class="link-modal">
+      <div class="modal-overlay" data-link-close="true"></div>
+      <div class="link-modal-card">
+        <div class="link-modal-header">
+          <div>
+            <div class="link-modal-title">Link This Agent</div>
+            <div class="link-modal-subtitle">Follow the steps to connect to your cloud dashboard.</div>
+          </div>
+          <button class="modal-close" data-link-close="true">×</button>
+        </div>
+        <div class="link-modal-steps">
+          <div class="link-step">1. Open the verification page.</div>
+          <div class="link-step">2. Enter the code shown below.</div>
+          <div class="link-step">3. Approve the device to finish linking.</div>
+        </div>
+        <div class="link-modal-code">
+          <div class="link-code-label">Linking Code</div>
+          <div id="linkModalCode" class="link-code-value">-</div>
+        </div>
+        <div class="link-modal-meta">
+          <div class="link-meta">
+            <div class="link-meta-label">Verification URL</div>
+            <div id="linkModalUrl" class="link-meta-value">-</div>
+          </div>
+          <div class="link-meta">
+            <div class="link-meta-label">Expires In</div>
+            <div id="linkModalExpires" class="link-meta-value">-</div>
+          </div>
+        </div>
+        <div class="link-modal-actions">
+          <button id="linkModalOpen" class="primary">Open Verification Page</button>
+          <button id="linkModalCopy" class="ghost">Copy Code</button>
+          <button id="linkModalStop" class="destructive">Stop Linking</button>
+        </div>
+      </div>
+    </div>
   </div>
 `;
 
@@ -285,6 +392,24 @@ const networkListEl = document.getElementById('networkList');
 const sectionEls = document.querySelectorAll('.section');
 const navButtons = document.querySelectorAll('.nav-item');
 const linkStatusEl = document.getElementById('linkStatus');
+const cloudSyncCardEl = document.getElementById('cloudSyncCard');
+const cloudSyncTitleEl = document.getElementById('cloudSyncTitle');
+const cloudSyncSubtitleEl = document.getElementById('cloudSyncSubtitle');
+const cloudSyncDetailsEl = document.getElementById('cloudSyncDetails');
+const cloudSyncStatsEl = document.getElementById('cloudSyncStats');
+const cloudSyncDeviceIdEl = document.getElementById('cloudSyncDeviceId');
+const cloudSyncLastConnectedEl = document.getElementById('cloudSyncLastConnected');
+const cloudSyncIntervalEl = document.getElementById('cloudSyncInterval');
+const cloudSyncAdapterCountEl = document.getElementById('cloudSyncAdapterCount');
+const syncStatusValueEl = document.getElementById('syncStatusValue');
+const syncSettingsIntervalEl = document.getElementById('syncSettingsInterval');
+const linkModalEl = document.getElementById('linkModal');
+const linkModalCodeEl = document.getElementById('linkModalCode');
+const linkModalUrlEl = document.getElementById('linkModalUrl');
+const linkModalExpiresEl = document.getElementById('linkModalExpires');
+const linkModalOpenEl = document.getElementById('linkModalOpen');
+const linkModalCopyEl = document.getElementById('linkModalCopy');
+const linkModalStopEl = document.getElementById('linkModalStop');
 const dashboardAdapterCountEl = document.getElementById('dashboardAdapterCount');
 const dashboardConnectedCountEl = document.getElementById('dashboardConnectedCount');
 const dashboardCloudStatusEl = document.getElementById('dashboardCloudStatus');
@@ -306,7 +431,15 @@ const networkFilterButtons = document.querySelectorAll('.filter-pill');
 let activeNetworkFilter = 'all';
 let lastNetworkResponse = null;
 let lastStatusResponse = null;
+let lastConfigResponse = null;
 let activeAdapterKey = null;
+let linkExpiryTimer = null;
+let linkExpiryDeadline = null;
+let linkExpiryBaseText = '';
+let linkIsActive = false;
+let linkVerificationUrl = '';
+let linkUserCode = '';
+
 
 if (dashboardAdapterPreviewEl) {
   dashboardAdapterPreviewEl.addEventListener('wheel', (event) => {
@@ -332,6 +465,171 @@ function formatDnsLines(dnsServers) {
     return '-';
   }
   return servers.map((server, index) => `${index + 1}. ${server}`).join('\n');
+}
+
+function formatInterval(seconds) {
+  const value = Number(seconds);
+  if (!Number.isFinite(value) || value <= 0) {
+    return '-';
+  }
+  return `${value} second${value === 1 ? '' : 's'}`;
+}
+
+function formatTimestamp(value) {
+  if (!value) {
+    return '-';
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '-';
+  }
+  return date.toLocaleString();
+}
+
+function updateLinkCountdown() {
+  if (!linkInfoEl || !linkExpiryDeadline) {
+    return;
+  }
+  const remainingMs = linkExpiryDeadline - Date.now();
+  const remainingSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
+  linkInfoEl.innerText = `${linkExpiryBaseText}\nExpires: ${remainingSeconds}s`;
+  if (linkModalExpiresEl) {
+    linkModalExpiresEl.innerText = `${remainingSeconds}s`;
+  }
+  if (remainingSeconds <= 0) {
+    clearLinkCountdown();
+    startLink();
+  }
+}
+
+function clearLinkCountdown() {
+  if (linkExpiryTimer) {
+    clearInterval(linkExpiryTimer);
+  }
+  linkExpiryTimer = null;
+  linkExpiryDeadline = null;
+  linkExpiryBaseText = '';
+  linkIsActive = false;
+  linkVerificationUrl = '';
+  linkUserCode = '';
+  closeLinkModal();
+  updateCloudSyncUI();
+}
+
+function openLinkModal() {
+  if (linkModalEl) {
+    linkModalEl.classList.add('open');
+  }
+}
+
+function closeLinkModal() {
+  if (linkModalEl) {
+    linkModalEl.classList.remove('open');
+  }
+}
+
+function updateLinkModalContent() {
+  if (linkModalCodeEl) {
+    linkModalCodeEl.innerText = linkUserCode || '-';
+  }
+  if (linkModalUrlEl) {
+    linkModalUrlEl.innerText = linkVerificationUrl || '-';
+  }
+  if (linkModalExpiresEl) {
+    linkModalExpiresEl.innerText = linkExpiryDeadline
+      ? `${Math.max(0, Math.ceil((linkExpiryDeadline - Date.now()) / 1000))}s`
+      : '-';
+  }
+}
+
+function getSyncedAdapterCount() {
+  const adapters = lastNetworkResponse?.adapters || [];
+  return adapters.filter((adapter) => adapter.connected).length;
+}
+
+async function refreshConfig() {
+  try {
+    lastConfigResponse = await GetConfig();
+  } catch {
+    lastConfigResponse = null;
+  }
+  updateCloudSyncUI();
+}
+
+function updateCloudSyncUI() {
+  const linked = Boolean(lastStatusResponse?.linked);
+  const statusLabel = linked ? 'Synced' : 'Not Synced';
+  if (linkStatusEl) {
+    linkStatusEl.innerText = statusLabel;
+    linkStatusEl.classList.toggle('success', linked);
+    linkStatusEl.classList.toggle('warning', !linked);
+  }
+  if (cloudSyncCardEl) {
+    cloudSyncCardEl.classList.toggle('synced', linked);
+    cloudSyncCardEl.classList.toggle('not-synced', !linked);
+  }
+  if (cloudSyncTitleEl) {
+    cloudSyncTitleEl.innerText = linked ? 'Cloud Sync Active' : 'Enable Cloud Sync';
+  }
+  if (cloudSyncSubtitleEl) {
+    cloudSyncSubtitleEl.innerText = linked
+      ? 'Your device is syncing with the cloud server.'
+      : 'Connect this agent to keep your devices in sync.';
+  }
+  if (cloudSyncDetailsEl) {
+    cloudSyncDetailsEl.style.display = linked ? 'grid' : 'none';
+  }
+  if (cloudSyncStatsEl) {
+    cloudSyncStatsEl.style.display = linked ? 'flex' : 'none';
+  }
+  if (cloudSyncDeviceIdEl) {
+    cloudSyncDeviceIdEl.innerText = lastStatusResponse?.agentUuid || '-';
+  }
+  if (cloudSyncLastConnectedEl) {
+    cloudSyncLastConnectedEl.innerText = formatTimestamp(lastStatusResponse?.obtainedAt);
+  }
+  if (cloudSyncIntervalEl) {
+    cloudSyncIntervalEl.innerText = linked
+      ? formatInterval(lastConfigResponse?.syncIntervalSeconds)
+      : '-';
+  }
+  if (syncSettingsIntervalEl) {
+    syncSettingsIntervalEl.innerText = linked
+      ? formatInterval(lastConfigResponse?.syncIntervalSeconds)
+      : '-';
+  }
+  if (cloudSyncAdapterCountEl) {
+    cloudSyncAdapterCountEl.innerText = linked ? `${getSyncedAdapterCount()}` : '-';
+  }
+  const enableButton = document.getElementById('startLink');
+  const checkButton = document.getElementById('checkLink');
+  const disableButton = document.getElementById('unlink');
+  const cancelButton = document.getElementById('cancelLink');
+  if (enableButton) {
+    enableButton.style.display = linked || linkIsActive ? 'none' : 'inline-flex';
+  }
+  if (checkButton) {
+    checkButton.style.display = linked ? 'inline-flex' : 'none';
+  }
+  if (disableButton) {
+    disableButton.style.display = linked ? 'inline-flex' : 'none';
+  }
+  if (cancelButton) {
+    cancelButton.style.display = 'none';
+  }
+  if (dashboardCloudStatusEl) {
+    dashboardCloudStatusEl.innerText = statusLabel;
+    dashboardCloudStatusEl.classList.toggle('status-good', linked);
+    dashboardCloudStatusEl.classList.toggle('status-warning', !linked);
+  }
+  if (syncStatusValueEl) {
+    syncStatusValueEl.innerText = linked ? 'Active' : 'Inactive';
+    syncStatusValueEl.classList.toggle('status-good', linked);
+    syncStatusValueEl.classList.toggle('status-warning', !linked);
+  }
+  if (linked) {
+    closeLinkModal();
+  }
 }
 
 function iconSvg(name) {
@@ -491,19 +789,14 @@ async function refreshStatus() {
     lastStatusResponse = status;
     statusEl.innerText = `Status: ${capitalize(status.state)} (Linked: ${status.linked ? 'Yes' : 'No'})`;
     if (status.linked) {
+      clearLinkCountdown();
       linkInfoEl.innerText = `Agent UUID: ${status.agentUuid}\nObtained: ${status.obtainedAt}`;
-      if (linkStatusEl) {
-        linkStatusEl.innerText = 'Linked';
-        linkStatusEl.classList.add('linked');
-      }
     } else {
       linkInfoEl.innerText = 'Not linked';
-      if (linkStatusEl) {
-        linkStatusEl.innerText = 'Not linked';
-        linkStatusEl.classList.remove('linked');
-      }
     }
     updateDashboardStatus(status);
+    updateCloudSyncUI();
+    refreshConfig();
   } catch (err) {
     statusEl.innerText = `Status error: ${err}`;
   }
@@ -512,8 +805,19 @@ async function refreshStatus() {
 async function startLink() {
   try {
     const resp = await StartLink();
-    linkInfoEl.innerText = `Visit: ${resp.verificationUri}\nCode: ${resp.userCode}\nExpires: ${resp.expiresIn}s`;
+    clearLinkCountdown();
+    linkExpiryDeadline = Date.now() + resp.expiresIn * 1000;
+    linkExpiryBaseText = `Visit: ${resp.verificationUri}\nCode: ${resp.userCode}`;
+    linkIsActive = true;
+    updateCloudSyncUI();
+    linkVerificationUrl = resp.verificationUri;
+    linkUserCode = resp.userCode;
+    updateLinkModalContent();
+    openLinkModal();
+    updateLinkCountdown();
+    linkExpiryTimer = setInterval(updateLinkCountdown, 1000);
   } catch (err) {
+    clearLinkCountdown();
     linkInfoEl.innerText = `Link error: ${err}`;
   }
 }
@@ -523,14 +827,29 @@ async function checkLink() {
     const resp = await LinkStatus();
     linkInfoEl.innerText = `Link status: ${resp.status}`;
     await refreshStatus();
+    if (resp.status !== 'pending') {
+      clearLinkCountdown();
+    }
   } catch (err) {
     linkInfoEl.innerText = `Link status error: ${err}`;
+  }
+}
+
+async function cancelLink() {
+  try {
+    const resp = await CancelLink();
+    clearLinkCountdown();
+    linkInfoEl.innerText = `Link cancelled: ${resp.status}`;
+    await refreshStatus();
+  } catch (err) {
+    linkInfoEl.innerText = `Cancel link error: ${err}`;
   }
 }
 
 async function unlink() {
   try {
     const resp = await Unlink();
+    clearLinkCountdown();
     linkInfoEl.innerText = `Unlink: ${resp.status}`;
     await refreshStatus();
   } catch (err) {
@@ -553,6 +872,7 @@ async function refreshNetwork() {
     lastNetworkResponse = resp;
     renderNetwork(resp);
     updateDashboardNetwork(resp);
+    updateCloudSyncUI();
   } catch (err) {
     networkPrimaryEl.innerText = `Network error: ${err}`;
     networkListEl.innerHTML = '';
@@ -564,9 +884,6 @@ function updateDashboardStatus(status) {
     return;
   }
   const stateLabel = capitalize(status.state);
-  if (dashboardCloudStatusEl) {
-    dashboardCloudStatusEl.innerText = status.linked ? 'Linked' : 'Not Linked';
-  }
   if (dashboardAgentStatusEl) {
     dashboardAgentStatusEl.innerText = stateLabel;
   }
@@ -939,6 +1256,47 @@ document.getElementById('refresh').addEventListener('click', refreshStatus);
 document.getElementById('startLink').addEventListener('click', startLink);
 document.getElementById('checkLink').addEventListener('click', checkLink);
 document.getElementById('unlink').addEventListener('click', unlink);
+document.getElementById('cancelLink').addEventListener('click', cancelLink);
+if (linkModalOpenEl) {
+  linkModalOpenEl.addEventListener('click', () => {
+    if (linkVerificationUrl) {
+      window.open(linkVerificationUrl, '_blank', 'noopener');
+    }
+  });
+}
+if (linkModalCopyEl) {
+  linkModalCopyEl.addEventListener('click', async () => {
+    if (!linkUserCode) {
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(linkUserCode);
+      linkModalCopyEl.innerText = 'Copied';
+      setTimeout(() => {
+        linkModalCopyEl.innerText = 'Copy Code';
+      }, 1200);
+    } catch {
+      linkModalCopyEl.innerText = 'Failed';
+      setTimeout(() => {
+        linkModalCopyEl.innerText = 'Copy Code';
+      }, 1200);
+    }
+  });
+}
+if (linkModalStopEl) {
+  linkModalStopEl.addEventListener('click', cancelLink);
+}
+if (linkModalEl) {
+  linkModalEl.querySelectorAll('[data-link-close="true"]').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (linkIsActive && !lastStatusResponse?.linked) {
+        cancelLink();
+        return;
+      }
+      closeLinkModal();
+    });
+  });
+}
 document.getElementById('startService').addEventListener('click', async () => {
   await StartService();
 });

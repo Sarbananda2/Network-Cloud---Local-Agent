@@ -52,6 +52,11 @@ type LogsResponse struct {
 	Lines []string `json:"lines,omitempty"`
 }
 
+type ConfigResponse struct {
+	ServerURL           string `json:"serverUrl"`
+	SyncIntervalSeconds int    `json:"syncIntervalSeconds"`
+}
+
 type NetworkResponse struct {
 	Primary  *AdapterInfo  `json:"primary,omitempty"`
 	Adapters []AdapterInfo `json:"adapters"`
@@ -77,12 +82,20 @@ func (a *App) GetStatus() (*StatusResponse, error) {
 	return doRequest[StatusResponse](http.MethodGet, "/status", nil)
 }
 
+func (a *App) GetConfig() (*ConfigResponse, error) {
+	return doRequest[ConfigResponse](http.MethodGet, "/config", nil)
+}
+
 func (a *App) StartLink() (*LinkStartResponse, error) {
 	return doRequest[LinkStartResponse](http.MethodPost, "/link/start", nil)
 }
 
 func (a *App) LinkStatus() (*LinkStatusResponse, error) {
 	return doRequest[LinkStatusResponse](http.MethodPost, "/link/status", nil)
+}
+
+func (a *App) CancelLink() (*LinkStatusResponse, error) {
+	return doRequest[LinkStatusResponse](http.MethodPost, "/link/cancel", nil)
 }
 
 func (a *App) Unlink() (*LinkStatusResponse, error) {

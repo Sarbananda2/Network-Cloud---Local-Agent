@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 	"time"
 
@@ -41,6 +42,7 @@ type App struct {
 	serverURL  string
 	state      *state.Machine
 	control    *control.Server
+	syncNow    chan struct{}
 }
 
 func main() {
@@ -157,7 +159,7 @@ func (a *App) controlService(action string) error {
 	return service.Control(svc, action)
 }
 
-func (a *App) run(ctx context.Context) error {
+func (a *App) run(ctx context.Context) (runErr error) {
 	cfg, configPath, err := a.loadConfig()
 	if err != nil {
 		return err
@@ -175,7 +177,10 @@ func (a *App) run(ctx context.Context) error {
 	logger.Info("using config file %s", configPath)
 	logger.Info("server url %s", cfg.ServerURL)
 
-	if err := a.startControlServer(cfg.ServerURL, cfg.LogFile, cancel); err != nil {
+	if a.syncNow == nil {
+		a.syncNow = make(chan struct{}, 1)
+	}
+	if err := a.startControlServer(cfg.ServerURL, cfg.LogFile, int(cfg.SyncInterval.Duration().Seconds()), cancel); err != nil {
 		return err
 	}
 	defer a.stopControlServer()
@@ -215,11 +220,55 @@ func (a *App) run(ctx context.Context) error {
 	var pending []api.Device
 	var lastHash string
 
+	revokeAndReset := func() {
+		_ = a.handleAuthRevoked()
+		storedToken = nil
+		client = nil
+		registered = false
+		pending = nil
+		lastHash = ""
+	}
+
 	for {
 		select {
 		case <-runCtx.Done():
 			a.state.Set(state.StateStopped)
 			return nil
+		case <-a.syncNow:
+			if storedToken == nil {
+				if err := loadToken(); err != nil {
+					logger.Warn("token load failed: %v", err)
+				}
+				if storedToken == nil {
+					a.state.Set(state.StateIdle)
+					continue
+				}
+			}
+			if !registered {
+				if err := ensureRegistered(runCtx, client, storedToken.AgentUUID, hostname, logger); err != nil {
+					if isAuthError(err) {
+						revokeAndReset()
+						continue
+					}
+					logger.Warn("registration failed: %v", err)
+					continue
+				}
+				registered = true
+			}
+			devices, err := buildDevicePayloads(ctx, hostname)
+			if err != nil {
+				logger.Warn("sync build failed: %v", err)
+				continue
+			}
+			var syncErr error
+			pending, syncErr = syncWithQueue(ctx, client, logger, pending, devices, true)
+			if syncErr != nil {
+				if isAuthError(syncErr) {
+					revokeAndReset()
+					continue
+				}
+				logger.Warn("sync failed: %v", syncErr)
+			}
 		case <-tokenTicker.C:
 			if storedToken == nil {
 				if err := loadToken(); err != nil {
@@ -237,7 +286,8 @@ func (a *App) run(ctx context.Context) error {
 			if !registered {
 				if err := ensureRegistered(runCtx, client, storedToken.AgentUUID, hostname, logger); err != nil {
 					if isAuthError(err) {
-						return a.handleAuthRevoked()
+						revokeAndReset()
+						continue
 					}
 				} else {
 					registered = true
@@ -246,7 +296,8 @@ func (a *App) run(ctx context.Context) error {
 			status, err := sendHeartbeat(runCtx, client, storedToken.AgentUUID, hostname, logger)
 			if err != nil {
 				if isAuthError(err) {
-					return a.handleAuthRevoked()
+					revokeAndReset()
+					continue
 				}
 				logger.Warn("heartbeat failed: %v", err)
 				continue
@@ -260,7 +311,8 @@ func (a *App) run(ctx context.Context) error {
 				var syncErr error
 				pending, syncErr = syncWithQueue(ctx, client, logger, pending, devices, true)
 				if syncErr != nil && isAuthError(syncErr) {
-					return a.handleAuthRevoked()
+					revokeAndReset()
+					continue
 				}
 			}
 		case <-syncTicker.C:
@@ -270,7 +322,8 @@ func (a *App) run(ctx context.Context) error {
 			if !registered {
 				if err := ensureRegistered(runCtx, client, storedToken.AgentUUID, hostname, logger); err != nil {
 					if isAuthError(err) {
-						return a.handleAuthRevoked()
+						revokeAndReset()
+						continue
 					}
 					continue
 				}
@@ -284,8 +337,11 @@ func (a *App) run(ctx context.Context) error {
 
 			var syncErr error
 			pending, syncErr = syncWithQueue(ctx, client, logger, pending, devices, true)
-			if syncErr != nil && isAuthError(syncErr) {
-				return a.handleAuthRevoked()
+			if syncErr != nil {
+				if isAuthError(syncErr) {
+					revokeAndReset()
+					continue
+				}
 			}
 		case <-networkTicker.C:
 			if storedToken == nil {
@@ -294,7 +350,8 @@ func (a *App) run(ctx context.Context) error {
 			if !registered {
 				if err := ensureRegistered(runCtx, client, storedToken.AgentUUID, hostname, logger); err != nil {
 					if isAuthError(err) {
-						return a.handleAuthRevoked()
+						revokeAndReset()
+						continue
 					}
 					continue
 				}
@@ -309,8 +366,11 @@ func (a *App) run(ctx context.Context) error {
 				lastHash = hash
 				var syncErr error
 				pending, syncErr = syncWithQueue(ctx, client, logger, pending, devices, true)
-				if syncErr != nil && isAuthError(syncErr) {
-					return a.handleAuthRevoked()
+				if syncErr != nil {
+					if isAuthError(syncErr) {
+						revokeAndReset()
+						continue
+					}
 				}
 			}
 		}
@@ -334,11 +394,11 @@ func (a *App) loadConfig() (*config.Config, string, error) {
 	return cfg, configPath, nil
 }
 
-func (a *App) startControlServer(serverURL string, logPath string, stopFn func()) error {
+func (a *App) startControlServer(serverURL string, logPath string, syncIntervalSeconds int, stopFn func()) error {
 	if a.control != nil {
 		return nil
 	}
-	server, err := control.NewServer(control.DefaultAddress, serverURL, logPath, a.state, stopFn)
+	server, err := control.NewServer(control.DefaultAddress, serverURL, logPath, syncIntervalSeconds, a.state, stopFn, a.signalSyncNow)
 	if err != nil {
 		return err
 	}
@@ -355,6 +415,16 @@ func (a *App) stopControlServer() {
 	}
 	_ = a.control.Shutdown(context.Background())
 	a.control = nil
+}
+
+func (a *App) signalSyncNow() {
+	if a.syncNow == nil {
+		return
+	}
+	select {
+	case a.syncNow <- struct{}{}:
+	default:
+	}
 }
 
 func (a *App) linkDevice(ctx context.Context) error {
@@ -398,6 +468,17 @@ func (a *App) linkDevice(ctx context.Context) error {
 	}
 
 	a.state.Set(state.StateAuthorized)
+	authClient := api.NewClient(cfg.ServerURL, tokenResp.AccessToken)
+	if err := registerAgent(ctx, authClient, tokenResp.AgentUUID, hostname); err != nil && !isConflictError(err) {
+		return err
+	}
+	devices, err := buildDevicePayloads(ctx, hostname)
+	if err != nil {
+		return err
+	}
+	if _, err := authClient.SyncDevices(ctx, devices); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -477,6 +558,7 @@ func sendHeartbeat(ctx context.Context, client *api.Client, agentUUID string, ho
 		Timestamp:  time.Now().UTC().Format(time.RFC3339),
 	}
 
+	logger.Info("sending heartbeat for agent %s", agentUUID)
 	resp, err := client.Heartbeat(ctx, request)
 	if err != nil {
 		return "", fmt.Errorf("heartbeat failed: %w", err)
@@ -540,6 +622,26 @@ func syncDevices(ctx context.Context, client *api.Client, logger *logging.Logger
 	return nil
 }
 
+func normalizeAdapterType(value string) string {
+	normalized := strings.ToLower(strings.TrimSpace(value))
+	switch normalized {
+	case "ethernet":
+		return "ethernet"
+	case "wireless", "wi-fi", "wifi":
+		return "wifi"
+	case "vpn":
+		return "vpn"
+	case "virtual":
+		return "virtual"
+	case "loopback":
+		return "loopback"
+	case "bluetooth", "unknown", "":
+		return "other"
+	default:
+		return "other"
+	}
+}
+
 func registerAgent(ctx context.Context, client *api.Client, agentUUID string, hostname string) error {
 	primary, err := currentPrimaryAdapter(ctx)
 	if err != nil {
@@ -596,7 +698,7 @@ func buildAdapterPayloads(adapterList []adapters.Adapter) []api.AdapterPayload {
 		payloads = append(payloads, api.AdapterPayload{
 			Name:           adapter.Name,
 			Description:    adapter.Description,
-			Type:           adapter.Type,
+			Type:           normalizeAdapterType(adapter.Type),
 			MACAddress:     adapter.MACAddress,
 			Connected:      adapter.Connected,
 			DHCPEnabled:    adapter.DHCPEnabled,
@@ -621,6 +723,17 @@ func isAuthError(err error) bool {
 	return false
 }
 
+func apiErrorStatus(err error) (int, bool) {
+	var apiErr *api.APIError
+	if err == nil {
+		return 0, false
+	}
+	if errors.As(err, &apiErr) {
+		return apiErr.StatusCode, true
+	}
+	return 0, false
+}
+
 func isConflictError(err error) bool {
 	var apiErr *api.APIError
 	if err == nil {
@@ -639,7 +752,6 @@ func (a *App) handleAuthRevoked() error {
 	}
 	return fmt.Errorf("device disconnected, re-link required")
 }
-
 
 func withSignalContext() context.Context {
 	ctx, _ := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

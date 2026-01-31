@@ -32,6 +32,20 @@ export namespace main {
 	        this.dnsServers = source["dnsServers"];
 	    }
 	}
+	export class ConfigResponse {
+	    serverUrl: string;
+	    syncIntervalSeconds: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new ConfigResponse(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.serverUrl = source["serverUrl"];
+	        this.syncIntervalSeconds = source["syncIntervalSeconds"];
+	    }
+	}
 	export class LinkStartResponse {
 	    verificationUri: string;
 	    userCode: string;

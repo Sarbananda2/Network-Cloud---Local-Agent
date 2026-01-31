@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -27,16 +28,19 @@ type Server struct {
 	listener net.Listener
 	state    *state.Machine
 	stopFn   func()
+	syncNow  func()
 	baseURL  string
 	logPath  string
+	syncIntervalSeconds int
 
 	mu       sync.Mutex
 	pending  *pendingLink
+	pollStop chan struct{}
 	shutdown chan struct{}
 }
 
 // NewServer creates a control server bound to the given address.
-func NewServer(addr string, baseURL string, logPath string, stateMachine *state.Machine, stopFn func()) (*Server, error) {
+func NewServer(addr string, baseURL string, logPath string, syncIntervalSeconds int, stateMachine *state.Machine, stopFn func(), syncNow func()) (*Server, error) {
 	if addr == "" {
 		addr = DefaultAddress
 	}
@@ -51,8 +55,10 @@ func NewServer(addr string, baseURL string, logPath string, stateMachine *state.
 		token:    controlToken,
 		state:    stateMachine,
 		stopFn:   stopFn,
+		syncNow:  syncNow,
 		baseURL:  baseURL,
 		logPath:  logPath,
+		syncIntervalSeconds: syncIntervalSeconds,
 		shutdown: make(chan struct{}),
 	}, nil
 }
@@ -68,6 +74,8 @@ func (s *Server) Start() error {
 	mux.HandleFunc("/stop", s.auth(s.handleStop))
 	mux.HandleFunc("/logs/tail", s.auth(s.handleLogsTail))
 	mux.HandleFunc("/network", s.auth(s.handleNetwork))
+	mux.HandleFunc("/config", s.auth(s.handleConfig))
+	mux.HandleFunc("/link/cancel", s.auth(s.handleLinkCancel))
 
 	s.server = &http.Server{
 		Addr:    s.addr,
@@ -76,7 +84,13 @@ func (s *Server) Start() error {
 
 	listener, err := net.Listen("tcp", s.addr)
 	if err != nil {
-		return fmt.Errorf("listen control api: %w", err)
+		if stopErr := stopExistingControlServer(s.addr, s.token); stopErr != nil {
+			return fmt.Errorf("listen control api: %w", err)
+		}
+		listener, err = net.Listen("tcp", s.addr)
+		if err != nil {
+			return fmt.Errorf("listen control api: %w", err)
+		}
 	}
 	s.listener = listener
 
@@ -86,6 +100,13 @@ func (s *Server) Start() error {
 	}()
 
 	return nil
+}
+
+func (s *Server) handleConfig(w http.ResponseWriter, _ *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"serverUrl":           s.baseURL,
+		"syncIntervalSeconds": s.syncIntervalSeconds,
+	})
 }
 
 // Shutdown stops the control server.
@@ -185,6 +206,8 @@ func (s *Server) handleLinkStart(w http.ResponseWriter, r *http.Request) {
 	s.mu.Unlock()
 
 	s.state.Set(state.StateAwaitingCode)
+	log.Printf("link: device code issued; starting token poller interval=%ds", resp.Interval)
+	s.startTokenPolling()
 	writeJSON(w, http.StatusOK, LinkStartResponse{
 		VerificationURI: resp.VerificationURI,
 		UserCode:        resp.UserCode,
@@ -204,6 +227,9 @@ func (s *Server) handleLinkStatus(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+
+	log.Printf("link: status check; pending device code polling")
+	s.startTokenPolling()
 
 	if time.Now().After(pending.expiresAt) {
 		s.clearPending()
@@ -246,6 +272,9 @@ func (s *Server) handleLinkStatus(w http.ResponseWriter, r *http.Request) {
 		}
 		s.clearPending()
 		s.state.Set(state.StateAuthorized)
+		if s.syncNow != nil {
+			s.syncNow()
+		}
 		writeJSON(w, http.StatusOK, LinkStatusResponse{
 			Status: "authorized",
 		})
@@ -287,9 +316,18 @@ func (s *Server) handleUnlink(w http.ResponseWriter, _ *http.Request) {
 		})
 		return
 	}
+	s.stopTokenPolling()
 	s.state.Set(state.StateIdle)
 	writeJSON(w, http.StatusOK, LinkStatusResponse{
 		Status: "unlinked",
+	})
+}
+
+func (s *Server) handleLinkCancel(w http.ResponseWriter, _ *http.Request) {
+	s.clearPending()
+	s.state.Set(state.StateIdle)
+	writeJSON(w, http.StatusOK, LinkStatusResponse{
+		Status: "cancelled",
 	})
 }
 
@@ -303,6 +341,7 @@ func (s *Server) handleStop(w http.ResponseWriter, _ *http.Request) {
 	if s.stopFn != nil {
 		s.stopFn()
 	}
+	s.stopTokenPolling()
 	writeJSON(w, http.StatusOK, LinkStatusResponse{
 		Status: "stopping",
 	})
@@ -334,6 +373,7 @@ func (s *Server) clearPending() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.pending = nil
+	s.stopTokenPollingLocked()
 }
 
 func (s *Server) bumpInterval() {
@@ -343,6 +383,131 @@ func (s *Server) bumpInterval() {
 		return
 	}
 	s.pending.interval += 5
+}
+
+func (s *Server) startTokenPolling() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.pending == nil {
+		return
+	}
+	if s.pollStop != nil {
+		return
+	}
+	s.pollStop = make(chan struct{})
+	stopCh := s.pollStop
+	log.Printf("link: token poller started")
+	go s.pollTokenLoop(stopCh)
+}
+
+func (s *Server) stopTokenPolling() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.stopTokenPollingLocked()
+}
+
+func (s *Server) stopTokenPollingLocked() {
+	if s.pollStop == nil {
+		return
+	}
+	close(s.pollStop)
+	s.pollStop = nil
+	log.Printf("link: token poller stopped")
+}
+
+func (s *Server) pollTokenLoop(stopCh chan struct{}) {
+	defer s.stopTokenPolling()
+	firstAttempt := true
+	for {
+		select {
+		case <-stopCh:
+			return
+		case <-s.shutdown:
+			return
+		default:
+		}
+
+		if !firstAttempt {
+			s.mu.Lock()
+			pending := s.pending
+			s.mu.Unlock()
+			if pending == nil {
+				return
+			}
+			time.Sleep(time.Duration(pending.interval) * time.Second)
+		} else {
+			firstAttempt = false
+		}
+
+		s.mu.Lock()
+		pending := s.pending
+		s.mu.Unlock()
+		if pending == nil {
+			return
+		}
+		if time.Now().After(pending.expiresAt) {
+			s.clearPending()
+			s.state.Set(state.StateIdle)
+			return
+		}
+
+		client := api.NewClient(s.baseURL, "")
+		log.Printf("link: polling device token")
+		resp, _, err := client.RequestDeviceToken(context.Background(), pending.deviceCode)
+		if err != nil {
+			log.Printf("link: token poll error: %v", err)
+			time.Sleep(time.Duration(pending.interval) * time.Second)
+			continue
+		}
+
+		switch resp.Error {
+		case "":
+			if resp.AccessToken == "" || resp.AgentUUID == "" {
+				log.Printf("link: token poll missing fields")
+				time.Sleep(time.Duration(pending.interval) * time.Second)
+				continue
+			}
+			if err := token.Save(token.StoredToken{
+				AccessToken: resp.AccessToken,
+				AgentUUID:   resp.AgentUUID,
+				ObtainedAt:  time.Now().UTC(),
+			}); err != nil {
+				log.Printf("link: token save error: %v", err)
+				time.Sleep(time.Duration(pending.interval) * time.Second)
+				continue
+			}
+			log.Printf("link: token saved; authorized")
+			s.clearPending()
+			s.state.Set(state.StateAuthorized)
+			if s.syncNow != nil {
+				s.syncNow()
+			}
+			return
+		case "authorization_pending":
+			log.Printf("link: token pending")
+			s.state.Set(state.StatePolling)
+		case "slow_down":
+			log.Printf("link: token polling slow_down")
+			s.bumpInterval()
+			s.state.Set(state.StatePolling)
+		case "expired_token":
+			log.Printf("link: token expired")
+			s.clearPending()
+			s.state.Set(state.StateIdle)
+			return
+		case "access_denied":
+			log.Printf("link: token denied")
+			s.clearPending()
+			s.state.Set(state.StateIdle)
+			return
+		default:
+			log.Printf("link: token poll error response: %s", resp.Error)
+			s.clearPending()
+			s.state.Set(state.StateIdle)
+			return
+		}
+
+	}
 }
 
 func deviceIdentity(ctx context.Context) (string, string, error) {
@@ -379,6 +544,25 @@ func writeJSON(w http.ResponseWriter, status int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(payload)
+}
+
+func stopExistingControlServer(addr string, token string) error {
+	url := fmt.Sprintf("http://%s/stop", addr)
+	req, err := http.NewRequest(http.MethodPost, url, nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("X-Control-Token", token)
+	client := &http.Client{Timeout: 2 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		return fmt.Errorf("stop status %d", resp.StatusCode)
+	}
+	return nil
 }
 
 func tailFile(path string, maxLines int) ([]string, error) {
