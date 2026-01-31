@@ -1,24 +1,21 @@
-Param(
+param(
   [string]$AgentDir = (Resolve-Path (Join-Path $PSScriptRoot "..")),
   [string]$UiDir = (Resolve-Path (Join-Path $PSScriptRoot "..\\ui"))
 )
 
-$repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..\\..")
-$debugLog = Join-Path $repoRoot ".cursor\\debug.log"
+$ErrorActionPreference = "Stop"
 
-function Stop-ProcessesByCommandLine {
+function Stop-ProcessesByPathPattern {
   param(
     [string]$Label,
-    [string]$CommandPattern,
     [string]$PathPattern
   )
 
   $procs = Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object {
-    $_.CommandLine -match $CommandPattern -and $_.CommandLine -match $PathPattern
+    $_.CommandLine -match $PathPattern
   }
 
   if (-not $procs) {
-    Write-Host "No $Label processes found."
     return
   }
 
@@ -32,11 +29,12 @@ function Stop-ProcessesByCommandLine {
   }
 }
 
-if (Test-Path $debugLog) {
-  Remove-Item -Force $debugLog
-  Write-Host "Deleted debug log: $debugLog"
-} else {
-  Write-Host "Debug log not found: $debugLog"
+if (-not (Test-Path $AgentDir)) {
+  throw "Agent directory not found: $AgentDir"
+}
+
+if (-not (Test-Path $UiDir)) {
+  throw "UI directory not found: $UiDir"
 }
 
 $serviceName = "NetworkCloudAgent"
@@ -51,22 +49,68 @@ if ($service -and $service.Status -eq "Running") {
   Write-Host "Service not found: $serviceName"
 }
 
-$agentCmdPattern = "(?i)go(\.exe)?\s+run\s+\.\s+run"
-$agentPathPattern = [Regex]::Escape($AgentDir)
-Stop-ProcessesByCommandLine -Label "agent" -CommandPattern $agentCmdPattern -PathPattern $agentPathPattern
-
-$uiCmdPattern = "(?i)wails(\.exe)?\s+dev"
-$uiPathPattern = [Regex]::Escape($UiDir)
-Stop-ProcessesByCommandLine -Label "UI" -CommandPattern $uiCmdPattern -PathPattern $uiPathPattern
-
-Write-Host "Starting agent from: $AgentDir"
-Write-Host "Starting UI from: $UiDir"
-
-Start-Process -WorkingDirectory $AgentDir -FilePath "go" -ArgumentList "run . run" -WindowStyle Normal
-$wailsCmd = Get-Command "wails" -ErrorAction SilentlyContinue
-if (-not $wailsCmd) {
-  Write-Error "Wails is not installed or not on PATH. Install it and re-run: go install github.com/wailsapp/wails/v2/cmd/wails@latest"
-  return
+Write-Host "Preparing agent config with console logging..."
+$configSource = Join-Path $AgentDir "agent.yaml"
+if (-not (Test-Path $configSource)) {
+  $configSource = Join-Path $AgentDir "config.example.yaml"
 }
-Start-Process -WorkingDirectory $UiDir -FilePath "wails" -ArgumentList "dev" -WindowStyle Normal
+
+$serverUrl = "https://network-cloud.replit.app"
+$serverLine = Get-Content $configSource -ErrorAction SilentlyContinue | Where-Object { $_ -match '^\s*server_url\s*:' } | Select-Object -First 1
+if ($serverLine) {
+  $serverUrl = ($serverLine -split ":", 2)[1].Trim()
+}
+
+$tempConfigDir = Join-Path $env:TEMP "NetworkCloud"
+if (-not (Test-Path $tempConfigDir)) {
+  New-Item -ItemType Directory -Path $tempConfigDir | Out-Null
+}
+$tempConfigPath = Join-Path $tempConfigDir "agent.local.yaml"
+@"
+server_url: $serverUrl
+heartbeat_interval: 30
+sync_interval: 300
+network_check_interval: 60
+log_level: "debug"
+log_file: ""
+auto_start: true
+"@ | Set-Content -Path $tempConfigPath -Encoding UTF8
+
+Write-Host "Starting agent (go run . run) from: $AgentDir"
+Write-Host "Using config: $tempConfigPath"
+$agentCmd = "cd /d `"$AgentDir`" && go run . run --config `"$tempConfigPath`" --verbose"
+$agentProc = Start-Process -FilePath "cmd.exe" -ArgumentList "/k $agentCmd" -PassThru
+
+if (-not (Get-Command wails -ErrorAction SilentlyContinue)) {
+  Write-Host "Wails CLI not found. Installing..."
+  go install github.com/wailsapp/wails/v2/cmd/wails@latest
+}
+
+Write-Host "Building Wails UI (clean) from: $UiDir"
+$uiBinDir = Join-Path $UiDir "build\\bin"
+$uiPathPattern = [Regex]::Escape($UiDir)
+Stop-ProcessesByPathPattern -Label "UI" -PathPattern $uiPathPattern
+
+Push-Location $UiDir
+try {
+  wails build --clean
+  if ($LASTEXITCODE -ne 0) {
+    throw "Wails build failed with exit code $LASTEXITCODE"
+  }
+} finally {
+  Pop-Location
+}
+
+$uiExe = Get-ChildItem -Path $uiBinDir -Filter *.exe -ErrorAction SilentlyContinue |
+  Sort-Object LastWriteTime -Descending |
+  Select-Object -First 1
+
+if (-not $uiExe) {
+  throw "UI executable not found in $uiBinDir. Build may have failed."
+}
+
+Write-Host "Starting Wails UI: $($uiExe.FullName)"
+Start-Process -FilePath $uiExe.FullName -WorkingDirectory $uiBinDir | Out-Null
+
+Write-Host "Agent and UI launched. This script will now exit."
 
